@@ -1,0 +1,37 @@
+/node_modules
+/public/hot
+/public/storage
+/public/vendor
+/storage/*.key
+/storage/tmp
+/vendor
+
+# Default assets
+/public/demo.html
+/public/mix-manifest.json
+/public/sitemap*.xml
+/public/sitemap
+/public/images
+/public/fonts
+/public/icons
+/public/css
+/public/img
+/public/js
+
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+Thumbs.db
+.DS_Store
+.DS_Store?
+.Trashes
+*.sqlite
+.env
+
+# Lock files
+composer.lock
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
