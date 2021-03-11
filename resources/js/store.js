@@ -15,6 +15,7 @@ export let store = new Vuex.Store({
       acceptedFriends: [],
       requests: []
     },
+    categories: []
   },
   actions: {
     register({commit}, user) {
@@ -68,7 +69,7 @@ export let store = new Vuex.Store({
 
     USER({commit},) {
       return new Promise((resolve, reject) => {
-        axios.get(`/api/user`)
+        axios.get(`/api/users`)
           .then(resp => {
             let user = resp.data
             commit('SET_AUTH_USER', user)
@@ -82,7 +83,7 @@ export let store = new Vuex.Store({
 
     USER_BY_ID({commit}, payload) {
       return new Promise((resolve, reject) => {
-        axios.get(`/api/user/${payload.id}`)
+        axios.get(`/api/users/${payload.id}`)
           .then(resp => {
             let user = resp.data
             commit('SET_CURRENT_USER_PROFILE', user)
@@ -153,8 +154,11 @@ export let store = new Vuex.Store({
     },
     UPLOAD_AVATAR({commit}, payload) {
       return new Promise((resolve, reject) => {
-        axios.post('/api/avatar', payload.file)
+        axios.post('/api/avatar',
+          payload.formData,
+          {headers: {'Content-type': 'multipart/form-data'}})
           .then(resp => {
+            commit('SET_AVATAR', resp.data.path)
             resolve(resp)
           })
           .catch(err => {
@@ -172,8 +176,19 @@ export let store = new Vuex.Store({
             reject(err)
           })
       })
+    },
+    GET_FORUM_CATEGORIES({commit}) {
+      return new Promise((resolve, reject) => {
+        axios.get('/api/forum')
+          .then(resp => {
+            let categories = resp.data.categories
+            commit('SET_FORUM_CATEGORIES', categories)
+          })
+          .catch(err => {
+            reject(err)
+          })
+      })
     }
-
   },
   mutations: {
     AUTH_REQUEST(state) {
@@ -206,7 +221,10 @@ export let store = new Vuex.Store({
     },
     SET_AVATAR(state, avatar) {
       state.avatar = avatar;
-    }
+    },
+    SET_FORUM_CATEGORIES(state, categories) {
+      state.categories = categories;
+    },
   },
   getters: {
     isLoggedIn: state => !!state.token,
@@ -214,5 +232,6 @@ export let store = new Vuex.Store({
     USER: state => state.authUser,
     USERS_LIST: state => state.usersList,
     CURRENT_USER_PROFILE: state => state.currentUserProfile,
+    FORUM_CATEGORIES: state => state.categories,
   }
 })

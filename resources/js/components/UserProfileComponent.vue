@@ -27,6 +27,21 @@
               </button>
             </div>
           </div>
+          <div
+            v-show="isAuthUser"
+            class="flex flex-col mt-8"
+          >
+            <input
+              type="file"
+              id="file"
+              ref="file"
+              v-on:change="handleFileUpload()"/>
+            <button
+              class="border bg-green-600 hover:bg-green-700 rounded-md py-2 px-3"
+              v-on:click="submitAvatar  ()">
+              Save new avatar
+            </button>
+          </div>
           <!--    @if(auth()->user()->id != $user->id)-->
 
           <!--    @if(auth()->user()->haveFriendOrRequest($user->id))-->
@@ -78,11 +93,19 @@ export default {
   name: "UserProfileComponent",
   data() {
     return {
-      currentUserId: this.$route.params.id
+      file: ''
     }
   },
   methods: {
-    ...mapActions(['USER_BY_ID', 'FRIEND_ACCEPT', 'FRIEND_REMOVE', 'FRIENDS_LIST', 'GET_AVATAR']),
+    ...mapActions(['USER_BY_ID', 'FRIEND_ACCEPT', 'FRIEND_REMOVE', 'FRIENDS_LIST', 'GET_AVATAR', 'UPLOAD_AVATAR']),
+    handleFileUpload() {
+      this.file = this.$refs.file.files[0];
+    },
+    submitAvatar() {
+      let formData = new FormData();
+      formData.append('image', this.file)
+      this.UPLOAD_AVATAR({formData})
+    }
   },
   computed: {
     ...mapGetters(['CURRENT_USER_PROFILE']),

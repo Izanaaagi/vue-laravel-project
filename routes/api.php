@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AvatarController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\ParseController;
 use App\Http\Controllers\UserProfileController;
@@ -28,15 +29,20 @@ Route::post('/register', [RegisterController::class, 'create']);
 Route::post('/login', [LoginController::class, 'login']);
 
 
-Route::middleware(['auth:sanctum'])->group( function () {
+Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::post('/avatar', [AvatarController::class, 'store']);
     Route::get('/avatar/{id}', [AvatarController::class, 'show']);
 
     Route::post('/logout', [LoginController::class, 'logout']);
-    Route::get('/user/{id}', [UserProfileController::class, 'show']);
-    Route::get('/user', [UserProfileController::class, 'index']);
+
+    Route::get('/users/{id}', [UserProfileController::class, 'show']);
+    Route::get('/users', [UserProfileController::class, 'index']);
+
     Route::get('/usersList', [UsersListController::class, 'showUsersList'])->name('list');
+
+
+    Route::resource('forum', CategoryController::class);
 
     Route::prefix('friends')->group(function () {
         Route::get('/', [FriendController::class, 'index'])->name('friends');

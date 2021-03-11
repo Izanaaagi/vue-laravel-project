@@ -8,6 +8,7 @@ import FriendsListComponent from "./components/FriendsListComponent";
 import UsersListComponent from "./components/UsersListComponent";
 import Vue from "vue";
 import {store} from "./store";
+import CategoryComponent from "./components/CategoryComponent";
 
 Vue.use(VueRouter);
 
@@ -42,6 +43,12 @@ export let router = new VueRouter({
           path: '/forum',
           name: 'forum',
           component: ForumComponent,
+          children: []
+        },
+        {
+          path: '/forum/:category',
+          name: 'forumCategory',
+          component: CategoryComponent,
         },
         {
           path: '/user/:id?',
