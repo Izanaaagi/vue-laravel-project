@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\Likeable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -60,4 +59,48 @@ class Topic extends Model
         return $this->find($topicId)->delete();
     }
 
+    public function likes()
+    {
+        return $this->morphMany(Like::class, 'likeable');
+    }
+
+    public function likesUp($likeStatus = true)
+    {
+        return $this->likes()->where('is_like', $likeStatus)->count();
+    }
+
+    public function likesDown()
+    {
+        return $this->likesUp(false);
+    }
+
+    public function isDislikedBy(User $user)
+    {
+        return $this->isLikedBy($user, false);
+    }
+
+    public function like($likeStatus = true, $user = null)
+    {
+        $this->likes()->updateOrCreate(
+            [
+                'user_id' => $user ? $user->id : auth()->id()
+            ],
+            [
+                'is_like' => $likeStatus
+            ]
+        );
+    }
+
+    public function dislike()
+    {
+        return $this->like(false);
+    }
+
+    public function isLikedBy(User $user, $likeStatus = true)
+    {
+        return (bool)$user->likes()
+            ->where('likeable_type', Topic::class)
+            ->where('likeable_id', $this->id)
+            ->where('is_like', $likeStatus)->count();
+    }
 }

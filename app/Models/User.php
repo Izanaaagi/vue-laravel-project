@@ -118,4 +118,9 @@ class User extends Authenticatable
     {
         return asset(Storage::url('/avatars/default-avatar.jpg'));
     }
+
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
+    }
 }

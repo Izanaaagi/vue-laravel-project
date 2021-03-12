@@ -15,7 +15,10 @@ export let store = new Vuex.Store({
       acceptedFriends: [],
       requests: []
     },
-    categories: []
+
+    categories: [],
+    categoryTopics: [],
+    currentTopic: {}
   },
   actions: {
     register({commit}, user) {
@@ -175,6 +178,7 @@ export let store = new Vuex.Store({
           .catch(err => {
             reject(err)
           })
+
       })
     },
     GET_FORUM_CATEGORIES({commit}) {
@@ -188,7 +192,31 @@ export let store = new Vuex.Store({
             reject(err)
           })
       })
-    }
+    },
+    GET_CATEGORY_TOPICS({commit}, payload) {
+      return new Promise((resolve, reject) => {
+        axios.get(`/api/forum/${payload.categoryId}`)
+          .then(resp => {
+            let topics = resp.data.topics
+            commit('SET_CATEGORY_TOPICS', topics)
+          })
+          .catch(err => {
+            reject(err)
+          })
+      })
+    },
+    GET_TOPIC_BY_ID({commit}, payload) {
+      return new Promise((resolve, reject) => {
+        axios.get(`/api/forum/${payload.categoryId}/topics/${payload.topicId}`)
+          .then(resp => {
+            let topic = resp.data.topic
+            commit('SET_CURRENT_TOPIC', topic)
+          })
+          .catch(err => {
+            reject(err)
+          })
+      })
+    },
   },
   mutations: {
     AUTH_REQUEST(state) {
@@ -225,6 +253,12 @@ export let store = new Vuex.Store({
     SET_FORUM_CATEGORIES(state, categories) {
       state.categories = categories;
     },
+    SET_CATEGORY_TOPICS(state, topics) {
+      state.categoryTopics = topics;
+    },
+    SET_CURRENT_TOPIC(state, topic) {
+      state.currentTopic = topic;
+    },
   },
   getters: {
     isLoggedIn: state => !!state.token,
@@ -233,5 +267,7 @@ export let store = new Vuex.Store({
     USERS_LIST: state => state.usersList,
     CURRENT_USER_PROFILE: state => state.currentUserProfile,
     FORUM_CATEGORIES: state => state.categories,
+    CATEGORY_TOPICS: state => state.categoryTopics,
+    CURRENT_TOPIC: state => state.currentTopic,
   }
 })

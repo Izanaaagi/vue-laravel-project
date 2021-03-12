@@ -3,8 +3,8 @@
     <div
       class="max-w-7xl flex flex-row justify-around mx-auto sm:px-6 lg:px-8">
       <router-link
-        class="lg:w-1/3"
-        :to="{name: 'forumCategory', props: {category: 1}}"
+        class="lg:w-1/3 no-underline"
+        :to="{name: 'forumCategory', params: {category: category.id}}"
         v-for="category in FORUM_CATEGORIES"
         :key="category.name">
         <div

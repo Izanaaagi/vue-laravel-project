@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
-use App\Models\User;
+use App\Models\Like;
 use Illuminate\Http\Request;
 
-class CategoryController extends Controller
+class LikeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +14,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
-        return response()->json(['categories' => $categories]);
+        //
     }
 
     /**
@@ -35,36 +33,30 @@ class CategoryController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store($topicId)
     {
-        //
+        Topic::find($topicId)->like();
+        return response()->json(['message' => 'Liked successfully']);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param \App\Models\Category $category
+     * @param \App\Models\Like $like
      * @return \Illuminate\Http\Response
      */
-    public function show($categoryId)
+    public function show(Like $like)
     {
-        Category::find($categoryId)->increment('views');
-        $topics = Category::find($categoryId)->topics();
-        foreach ($topics as $topic) {
-            $user = User::find($topic->user_id);
-            $topic->user_name = $user->name;
-
-        }
-        return response()->json(['topics' => $topics]);
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\Category $category
+     * @param \App\Models\Like $like
      * @return \Illuminate\Http\Response
      */
-    public function edit(Category $category)
+    public function edit(Like $like)
     {
         //
     }
@@ -73,21 +65,22 @@ class CategoryController extends Controller
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Category $category
+     * @param \App\Models\Like $like
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update($topicId)
     {
-        //
+        Topic::find($topicId)->dislike();
+        return response()->json(['message' => 'Disliked successfully']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Models\Category $category
+     * @param \App\Models\Like $like
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category $category)
+    public function destroy(Like $like)
     {
         //
     }
