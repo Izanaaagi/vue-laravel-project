@@ -217,6 +217,30 @@ export let store = new Vuex.Store({
           })
       })
     },
+    LIKE_TOPIC({commit}, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post(`/api/forum/${payload.categoryId}/topics/${payload.topicId}/likes`, {'action': 'like'})
+          .then(resp => {
+            let {likes, dislikes} = resp.data
+            commit('SET_TOPIC_LIKES', {likes, dislikes})
+          })
+          .catch(err => {
+            reject(err)
+          })
+      })
+    },
+    DISLIKE_TOPIC({commit}, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post(`/api/forum/${payload.categoryId}/topics/${payload.topicId}/likes`, {'action': 'dislike'})
+          .then(resp => {
+            let {likes, dislikes} = resp.data
+            commit('SET_TOPIC_DISLIKES', {likes, dislikes})
+          })
+          .catch(err => {
+            reject(err)
+          })
+      })
+    },
   },
   mutations: {
     AUTH_REQUEST(state) {
@@ -248,17 +272,29 @@ export let store = new Vuex.Store({
       state.friends.requests = list.requests
     },
     SET_AVATAR(state, avatar) {
-      state.avatar = avatar;
+      state.avatar = avatar
     },
     SET_FORUM_CATEGORIES(state, categories) {
-      state.categories = categories;
+      state.categories = categories
     },
     SET_CATEGORY_TOPICS(state, topics) {
-      state.categoryTopics = topics;
+      state.categoryTopics = topics
     },
     SET_CURRENT_TOPIC(state, topic) {
-      state.currentTopic = topic;
+      state.currentTopic = topic
     },
+    SET_TOPIC_LIKES(state, statusObject) {
+      state.currentTopic.likes = statusObject.likes
+      state.currentTopic.dislikes = statusObject.dislikes
+      state.currentTopic.isLiked = true;
+      state.currentTopic.isDisliked = false
+    },
+    SET_TOPIC_DISLIKES(state, statusObject) {
+      state.currentTopic.likes = statusObject.likes
+      state.currentTopic.dislikes = statusObject.dislikes
+      state.currentTopic.isLiked = false
+      state.currentTopic.isDisliked = true
+    }
   },
   getters: {
     isLoggedIn: state => !!state.token,

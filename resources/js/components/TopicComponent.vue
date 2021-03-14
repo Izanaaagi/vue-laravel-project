@@ -20,9 +20,9 @@
       <p class="text-gray-800 dark:text-gray-100 leading-snug md:leading-normal">{{ CURRENT_TOPIC.text }}</p>
       <div class="flex justify-between items-center mt-5">
         <div class="flex ">
-          <button>
+          <button @click="LIKE_TOPIC({categoryId, topicId})">
             <svg viewBox="0 0 20 20"
-                 class="text-gray-500 hover:text-green-600 mr-1 w-5">
+                 :class="['hover:text-green-600', 'mr-1', 'w-5', {'text-green-600': CURRENT_TOPIC.isLiked }, 'text-gray-500']">
               <g id="Page-1" stroke="none" stroke-width="1" fill="none"
               >
                 <g class="fill-current">
@@ -34,8 +34,11 @@
             </svg>
           </button>
           <span class=" ml-1 text-gray-500 dark:text-gray-400 font-light">{{ CURRENT_TOPIC.likes }}</span>
-          <button class="ml-5">
-            <svg viewBox="0 0 20 20" class="text-gray-500 hover:text-red-600 mr-1 w-5">
+          <button
+            @click="DISLIKE_TOPIC({categoryId, topicId})"
+            class="ml-5">
+            <svg viewBox="0 0 20 20"
+                 :class="['hover:text-red-600', 'mr-1', 'w-5', {'text-red-600': CURRENT_TOPIC.isDisliked}, 'text-gray-500']">
               <g id="Page-1" stroke="none" stroke-width="1" fill="none">
                 <g class="fill-current">
                   <path
@@ -150,10 +153,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['GET_TOPIC_BY_ID'])
+    ...mapActions(['GET_TOPIC_BY_ID', 'LIKE_TOPIC', 'DISLIKE_TOPIC'])
   },
   computed: {
-    ...mapGetters(['CURRENT_TOPIC'])
+    ...mapGetters(['CURRENT_TOPIC']),
+    likes() {
+    }
   },
   mounted() {
     this.GET_TOPIC_BY_ID({categoryId: this.categoryId, topicId: this.topicId})
@@ -162,7 +167,9 @@ export default {
 </script>
 
 <style scoped>
-button {
+button,
+button:focus,
+button:active {
   outline: none;
 }
 </style>
