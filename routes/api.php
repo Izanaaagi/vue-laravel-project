@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ParseController;
+use App\Http\Controllers\TopicCommmentController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\TopicLikeController;
 use App\Http\Controllers\UserProfileController;
@@ -48,6 +49,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('forum', CategoryController::class);
     Route::apiResource('forum.topics', TopicController::class);
     Route::apiResource('forum.topics.likes', TopicLikeController::class);
+    Route::apiResource('forum.topics.comments', TopicCommmentController::class);
 
     Route::prefix('friends')->group(function () {
         Route::get('/', [FriendController::class, 'index'])->name('friends');

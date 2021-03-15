@@ -30,7 +30,7 @@ class Topic extends Model
     //Return comments for topic
     public function comments()
     {
-        return $this->hasMany(Comment::class);
+        return $this->morphMany(Comment::class, 'commentable');
     }
 
     //Return count of comments
@@ -103,4 +103,5 @@ class Topic extends Model
             ->where('likeable_id', $this->id)
             ->where('is_like', $likeStatus)->count();
     }
+
 }
