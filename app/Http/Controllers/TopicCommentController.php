@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Topic;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class TopicCommentController extends Controller
@@ -17,6 +18,10 @@ class TopicCommentController extends Controller
     {
         $topic = Topic::find($topicId);
         $comments = $topic->comments()->get();
+        foreach ($comments as $comment) {
+            $comment->user = $comment->user();
+            $comment->user->avatar_path = User::find($comment->user_id)->getAvatar();
+        }
         return response()->json(['comments' => $comments]);
     }
 
@@ -40,7 +45,12 @@ class TopicCommentController extends Controller
     {
         $topic = Topic::find($topicId);
         $topic->addComment($request->text);
-        return response()->json(['message' => 'comment \'' . $request->text . '\' created']);
+        $comments = $topic->comments()->get();
+        foreach ($comments as $comment) {
+            $comment->user = $comment->user();
+            $comment->user->avatar_path = User::find($comment->user_id)->getAvatar();
+        }
+        return response()->json(['message' => 'comment \'' . $request->text . '\' created', 'comments' => $comments]);
     }
 
     /**
@@ -86,9 +96,15 @@ class TopicCommentController extends Controller
     public function destroy($categoryId, $topicId, $commentId)
     {
         $comment = Comment::find($commentId);
+        $topic = Topic::find($topicId);
         if ($comment->isCommentedBy(auth()->id())) {
             $comment->deleteComment($commentId);
-            return response()->json(['message' => 'comment deleted']);
+            $comments = $topic->comments()->get();
+            foreach ($comments as $comment) {
+                $comment->user = $comment->user();
+                $comment->user->avatar_path = User::find($comment->user_id)->getAvatar();
+            }
+            return response()->json(['message' => 'comment deleted', 'comments' => $comments]);
         }
         return abort(404);
     }

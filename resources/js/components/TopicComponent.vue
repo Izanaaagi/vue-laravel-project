@@ -54,7 +54,7 @@
               class="ml-1 text-gray-500 dark:text-gray-400  font-light">{{ CURRENT_TOPIC.dislikes }}</span></span>
           </div>
           <div class="flex flex-row ml-1 text-gray-500 dark:text-gray-400 font-light">
-            <div>11 comments</div>
+            <div>{{ TOPIC_COMMENTS.length }} comments</div>
             <!--          @if(auth()->id() == $topic->user_id)-->
             <!--          <form class="ml-5"-->
             <!--                action="{{route('deleteTopic', ['topic' => $topic])}}"-->
@@ -80,50 +80,43 @@
       <section class="rounded-b-lg w-full  mt-4 ">
 
         <div id="task-comments" class="pt-4">
-          <div class="bg-white rounded-lg p-3  flex flex-col justify-center items-center md:items-start shadow-lg mb-4">
+          <div
+            class="bg-white rounded-lg p-3  flex flex-col justify-center items-center md:items-start shadow-lg mb-4"
+            v-for="comment in TOPIC_COMMENTS">
             <div class="flex flex-row justify-center mr-2 w-full">
               <img width="48" height="48"
                    class="rounded-full w-10 h-10 mr-4 shadow-lg mb-4"
-                   src="http://back/storage/avatars/default-avatar.jpg">
+                   :src="comment.user.avatar_path">
               <div class="flex flex-row justify-between w-full">
                 <h3 class="text-purple-600 font-semibold text-lg text-center md:text-left ">
-                  Name</h3>
+                  {{ comment.user.name }}</h3>
                 <span
-                  class="text-gray-500">Date</span>
+                  class="text-gray-500">{{ comment.created_at }}</span>
               </div>
             </div>
 
 
             <p style="width: 90%"
-               class="text-gray-600 text-lg text-center md:text-left ">Lorem ipsum dolor sit amet, consectetur
-              adipisicing
-              elit. Commodi consequatur culpa, delectus ea ipsa laboriosam laborum maiores minus porro sed, suscipit
-              tempora! Alias consequuntur cum ex id illum laudantium nam odit praesentium quas quod reprehenderit rerum
-              sed, sunt unde, velit vero voluptatum? Assumenda at dolores natus odit repellat sint tenetur?</p>
-            <form class="w-full"
-                  action=""
-                  accept-charset="UTF-8"
-                  method="post">
-              <div class="flex flex-row justify-end">
-                <button type="submit"
-                        class="outline-none font-bold px-2 bg-red-600 text-sm hover:bg-red-700 text-white shadow-md rounded-lg ">
-                  Delete
-                </button>
-              </div>
-            </form>
+               class="text-gray-600 text-lg text-center md:text-left ">{{ comment.text }}</p>
+
+            <div v-show="USER.id === comment.user_id" class="w-full flex flex-row justify-end">
+              <button @click="DELETE_TOPIC_COMMENT({categoryId, topicId, commentId: comment.id })"
+                      class="outline-none font-bold px-2 bg-red-600 text-sm hover:bg-red-700 text-white shadow-md rounded-lg ">
+                Delete
+              </button>
+            </div>
           </div>
 
-          <form action="" accept-charset="UTF-8" method="post"><input
-            type="hidden">
-            <textarea
-              class="resize-none w-full shadow-inner p-4 border-0 mb-4 rounded-lg focus:shadow-outline text-2xl"
-              placeholder="Ask questions here." cols="6" rows="4" id="comment_content"
-              name="text" spellcheck="false"></textarea>
-            <button type="submit"
-                    class="font-bold py-2 px-4 w-full bg-indigo-600 text-lg hover:bg-indigo-700 text-white shadow-md rounded-lg ">
-              Comment
-            </button>
-          </form>
+
+          <textarea
+            class="resize-none w-full shadow-inner p-4 border-0 mb-4 rounded-lg focus:shadow-outline text-2xl"
+            placeholder="Ask questions here." cols="6" rows="4" id="comment_content"
+            name="text"
+            v-model="commentText" spellcheck="false"></textarea>
+          <button @click="sendComment"
+                  class="font-bold py-2 px-4 w-full bg-indigo-600 text-lg hover:bg-indigo-700 text-white shadow-md rounded-lg ">
+            Comment
+          </button>
         </div>
       </section>
 
@@ -140,19 +133,32 @@ export default {
   data() {
     return {
       categoryId: this.$route.params.category,
-      topicId: this.$route.params.topic
+      topicId: this.$route.params.topic,
+      commentText: ''
     }
   },
   methods: {
-    ...mapActions(['GET_TOPIC_BY_ID', 'LIKE_TOPIC', 'DISLIKE_TOPIC'])
+    ...mapActions([
+      'GET_TOPIC_BY_ID',
+      'LIKE_TOPIC',
+      'DISLIKE_TOPIC',
+      'GET_TOPIC_COMMENTS',
+      'DELETE_TOPIC_COMMENT',
+      'COMMENT_TOPIC']),
+    sendComment() {
+      this.COMMENT_TOPIC({categoryId: this.categoryId, topicId: this.topicId, text: this.commentText})
+      this.commentText = ''
+    }
   },
   computed: {
-    ...mapGetters(['CURRENT_TOPIC']),
-    likes() {
-    }
+    ...mapGetters([
+      'CURRENT_TOPIC',
+      'TOPIC_COMMENTS',
+      'USER']),
   },
   mounted() {
     this.GET_TOPIC_BY_ID({categoryId: this.categoryId, topicId: this.topicId})
+    this.GET_TOPIC_COMMENTS({categoryId: this.categoryId, topicId: this.topicId})
   }
 }
 </script>

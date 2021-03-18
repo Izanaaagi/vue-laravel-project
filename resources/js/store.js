@@ -18,7 +18,8 @@ export let store = new Vuex.Store({
 
     categories: [],
     categoryTopics: [],
-    currentTopic: {}
+    currentTopic: {},
+    topicComments: []
   },
   actions: {
     register({commit}, user) {
@@ -241,6 +242,43 @@ export let store = new Vuex.Store({
           })
       })
     },
+    GET_TOPIC_COMMENTS({commit}, payload) {
+      return new Promise((resolve, reject) => {
+        axios.get(`/api/forum/${payload.categoryId}/topics/${payload.topicId}/comments`)
+          .then(resp => {
+            let comments = resp.data.comments
+            commit('SET_COMMENTS', comments)
+          })
+          .catch(err => {
+            reject(err)
+          })
+      })
+    },
+    DELETE_TOPIC_COMMENT({commit}, payload) {
+      return new Promise((resolve, reject) => {
+        axios.delete(`/api/forum/${payload.categoryId}/topics/${payload.topicId}/comments/${payload.commentId}`)
+          .then(resp => {
+            let comments = resp.data.comments
+            commit('SET_COMMENTS', comments)
+          })
+          .catch(err => {
+            reject(err)
+          })
+      })
+    },
+    COMMENT_TOPIC({commit}, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post(`/api/forum/${payload.categoryId}/topics/${payload.topicId}/comments`, {text: payload.text})
+          .then(resp => {
+            let comments = resp.data.comments
+            commit('SET_COMMENTS', comments)
+          })
+          .catch(err => {
+            reject(err)
+          })
+      })
+    },
+
   },
   mutations: {
     AUTH_REQUEST(state) {
@@ -294,6 +332,9 @@ export let store = new Vuex.Store({
       state.currentTopic.dislikes = statusObject.dislikes
       state.currentTopic.isLiked = false
       state.currentTopic.isDisliked = true
+    },
+    SET_COMMENTS(state, comments) {
+      state.topicComments = comments;
     }
   },
   getters: {
@@ -305,5 +346,6 @@ export let store = new Vuex.Store({
     FORUM_CATEGORIES: state => state.categories,
     CATEGORY_TOPICS: state => state.categoryTopics,
     CURRENT_TOPIC: state => state.currentTopic,
+    TOPIC_COMMENTS: state => state.topicComments,
   }
 })

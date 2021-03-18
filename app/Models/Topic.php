@@ -30,7 +30,8 @@ class Topic extends Model
     //Return comments for topic
     public function comments()
     {
-        return $this->morphMany(Comment::class, 'commentable');
+        $comments = $this->morphMany(Comment::class, 'commentable');
+        return $comments;
     }
 
     //Return count of comments
