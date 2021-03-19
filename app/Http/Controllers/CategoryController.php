@@ -53,7 +53,6 @@ class CategoryController extends Controller
         foreach ($topics as $topic) {
             $user = User::find($topic->user_id);
             $topic->user_name = $user->name;
-
         }
         return response()->json(['topics' => $topics]);
     }

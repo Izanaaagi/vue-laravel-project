@@ -35,9 +35,19 @@ class TopicController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $categoryId)
     {
+        $text = $request->text;
+        $title = $request->title;
+        $topic = new Topic();
+        $topic->createTopic($categoryId, $text, $title);
 
+        $topics = Category::find($categoryId)->topics();
+        foreach ($topics as $topic) {
+            $user = User::find($topic->user_id);
+            $topic->user_name = $user->name;
+        }
+        return response()->json(['topics' => $topics, 'message' => 'topic created successfull']);
     }
 
     /**
@@ -46,7 +56,8 @@ class TopicController extends Controller
      * @param \App\Models\Topic $topic
      * @return \Illuminate\Http\Response
      */
-    public function show($categoryId, $topicId)
+    public
+    function show($categoryId, $topicId)
     {
         $topic = Topic::find($topicId);
         $topic->user = User::find($topic->user_id);
@@ -65,7 +76,8 @@ class TopicController extends Controller
      * @param \App\Models\cr $cr
      * @return \Illuminate\Http\Response
      */
-    public function edit(cr $cr)
+    public
+    function edit(cr $cr)
     {
         //
     }
@@ -77,7 +89,8 @@ class TopicController extends Controller
      * @param \App\Models\cr $cr
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, cr $cr)
+    public
+    function update(Request $request, cr $cr)
     {
         //
     }
@@ -88,13 +101,19 @@ class TopicController extends Controller
      * @param \App\Models\Topic $topic
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Topic $topic)
+    public
+    function destroy($categoryId, $topicId)
     {
+        $topic = Topic::find($topicId);
         if ($topic->isTopicBy(auth()->id())) {
             $topic->deleteTopic($topic->id);
-            return redirect(route('forumCategory', ['category' => $topic->category()->id]))
-                ->with('status', 'Topic was deleted');
-        } else return redirect(route('forumCategory', ['category' => $topic->category()->id]))
-            ->withErrors('It isn`t your topic');
+            $topics = Category::find($categoryId)->topics();
+            foreach ($topics as $topic) {
+                $user = User::find($topic->user_id);
+                $topic->user_name = $user->name;
+            }
+            return response()->json(['topics' => $topics, 'message' => 'topic deleted']);
+        }
+        abort(404);
     }
 }

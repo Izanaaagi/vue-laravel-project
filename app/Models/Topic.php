@@ -10,9 +10,10 @@ class Topic extends Model
     use HasFactory;
 
     protected $fillable = [
-        'category_id',
+        'user_id',
         'title',
         'text',
+        'category_id'
     ];
 
     //Return category of this topic
@@ -25,6 +26,16 @@ class Topic extends Model
     public function user()
     {
         return $this->belongsTo(User::class)->first();
+    }
+
+    public function createTopic($categoryId, $title, $text)
+    {
+        $this->create([
+            'user_id' => auth()->user()->id,
+            'title' => $title,
+            'text' => $text,
+            'category_id' => $categoryId,
+        ])->save();
     }
 
     //Return comments for topic
@@ -57,7 +68,10 @@ class Topic extends Model
 
     public function deleteTopic($topicId)
     {
-        return $this->find($topicId)->delete();
+        $topic = Topic::find($topicId);
+        $topic->comments()->delete();
+        $topic->likes()->delete();
+        return $topic->delete();
     }
 
     public function likes()

@@ -10,6 +10,7 @@ import Vue from "vue";
 import {store} from "./store";
 import CategoryComponent from "./components/CategoryComponent";
 import TopicComponent from "./components/TopicComponent";
+import CreateTopicComponent from "./components/CreateTopicComponent";
 
 Vue.use(VueRouter);
 
@@ -50,6 +51,11 @@ export let router = new VueRouter({
           path: '/forum/:category',
           name: 'forumCategory',
           component: CategoryComponent,
+        },
+        {
+          path: '/forum/:category/topics/createTopic',
+          name: 'createForumTopic',
+          component: CreateTopicComponent,
         },
         {
           path: '/forum/:category/topics/:topic',

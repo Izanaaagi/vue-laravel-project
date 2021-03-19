@@ -107,7 +107,6 @@
             </div>
           </div>
 
-
           <textarea
             class="resize-none w-full shadow-inner p-4 border-0 mb-4 rounded-lg focus:shadow-outline text-2xl"
             placeholder="Ask questions here." cols="6" rows="4" id="comment_content"

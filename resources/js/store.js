@@ -142,6 +142,20 @@ export let store = new Vuex.Store({
           })
       })
     },
+    FRIEND_REQUEST({commit}, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post(`/api/friends/sendRequest/${payload.id}`)
+          .then(resp => {
+            let friends = resp.data.friends
+            let requests = resp.data.requests
+            commit('SET_FRIENDS_LIST', {friends, requests})
+            resolve(resp)
+          })
+          .catch(err => {
+            reject(err)
+          })
+      })
+    },
     FRIEND_REMOVE({commit}, payload) {
       return new Promise((resolve, reject) => {
         axios.delete(`/api/friends/delete/${payload.id}`)
@@ -278,7 +292,30 @@ export let store = new Vuex.Store({
           })
       })
     },
-
+    DELETE_TOPIC({commit}, payload) {
+      return new Promise((resolve, reject) => {
+        axios.delete(`/api/forum/${payload.categoryId}/topics/${payload.topicId}`)
+          .then(resp => {
+            let topics = resp.data.topics
+            commit('SET_CATEGORY_TOPICS', topics)
+          })
+          .catch(err => {
+            reject(err)
+          })
+      })
+    },
+    CREATE_TOPIC({commit}, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post(`/api/forum/${payload.categoryId}/topics`, {title: payload.title, text: payload.text})
+          .then(resp => {
+            let topics = resp.data.topics
+            commit('SET_CATEGORY_TOPICS', topics)
+          })
+          .catch(err => {
+            reject(err)
+          })
+      })
+    },
   },
   mutations: {
     AUTH_REQUEST(state) {

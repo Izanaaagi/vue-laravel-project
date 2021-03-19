@@ -14,14 +14,14 @@
           <b>Date of Registration: </b> {{ CURRENT_USER_PROFILE.created_at }}
           <div v-show="!isAuthUser">
             <div v-if="isFriend">
-              <button @click="FRIEND_ACCEPT({id: CURRENT_USER_PROFILE.id})"
+              <button @click="FRIEND_REMOVE({id: CURRENT_USER_PROFILE.id})"
                       class="border bg-red-600 hover:bg-red-700 rounded-md py-2 px-3">
                 Remove from Friends
               </button>
 
             </div>
             <div v-else>
-              <button @click="FRIEND_REMOVE({id: CURRENT_USER_PROFILE.id})"
+              <button @click="FRIEND_REQUEST({id: CURRENT_USER_PROFILE.id})"
                       class="border bg-green-600 hover:bg-green-700 rounded-md py-2 px-3">
                 Add to Friends
               </button>
@@ -38,7 +38,7 @@
               v-on:change="handleFileUpload()"/>
             <button
               class="border bg-green-600 hover:bg-green-700 rounded-md py-2 px-3"
-              v-on:click="submitAvatar  ()">
+              v-on:click="submitAvatar">
               Save new avatar
             </button>
           </div>
@@ -97,7 +97,13 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['USER_BY_ID', 'FRIEND_ACCEPT', 'FRIEND_REMOVE', 'FRIENDS_LIST', 'GET_AVATAR', 'UPLOAD_AVATAR']),
+    ...mapActions([
+      'USER_BY_ID',
+      'FRIEND_REQUEST',
+      'FRIEND_REMOVE',
+      'FRIENDS_LIST',
+      'GET_AVATAR',
+      'UPLOAD_AVATAR']),
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
     },

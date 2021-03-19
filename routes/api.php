@@ -5,16 +5,11 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FriendController;
-use App\Http\Controllers\LikeController;
-use App\Http\Controllers\ParseController;
 use App\Http\Controllers\TopicCommentController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\TopicLikeController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\UsersListController;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
 /*

@@ -26,7 +26,9 @@ class FriendController extends Controller
                 auth()->user()->friendRequest($id);
             };
         }
-        return redirect(route('friends'));
+        $friends = auth()->user()->friends();
+        $requests = auth()->user()->friendRequests();
+        return response()->json(['message' => 'request sended', 'friends' => $friends, 'requests' => $requests]);
     }
 
     public function deleteFriend($id)
