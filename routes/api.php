@@ -1,10 +1,12 @@
 <?php
 
+use App\Events\MessageEvent;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FriendController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\TopicCommentController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\TopicLikeController;
@@ -52,4 +54,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/sendRequest/{id}', [FriendController::class, 'sendRequest'])->name('sendRequest');
         Route::delete('/delete/{id}', [FriendController::class, 'deleteFriend'])->name('deleteFriend');
     });
+
+    Route::apiResource('chat', MessageController::class);
 });

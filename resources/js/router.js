@@ -11,6 +11,7 @@ import {store} from "./store";
 import CategoryComponent from "./components/CategoryComponent";
 import TopicComponent from "./components/TopicComponent";
 import CreateTopicComponent from "./components/CreateTopicComponent";
+import ChatComponent from "./components/ChatComponent";
 
 Vue.use(VueRouter);
 
@@ -77,6 +78,11 @@ export let router = new VueRouter({
           path: '/usersList',
           name: 'usersList',
           component: UsersListComponent,
+        },
+        {
+          path: '/chat',
+          name: 'chat',
+          component: ChatComponent,
         },
       ]
     }

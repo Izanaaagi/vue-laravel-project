@@ -18,6 +18,7 @@
           </router-link>
           <router-link :to="{name: 'friends'}" class="mr-5 hover:text-gray-900">Friends</router-link>
           <router-link :to="{name: 'forum'}" class="mr-5 hover:text-gray-900">Forum</router-link>
+          <router-link :to="{name: 'chat'}" class="mr-5 hover:text-gray-900">Chat</router-link>
         </nav>
         <button
           v-show="isLoggedIn"
