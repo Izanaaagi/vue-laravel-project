@@ -47,17 +47,18 @@
       </div>
       <div id="messages"
            class="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
-        <div class="chat-message">
-          <div v-for="message in messages" :class="['flex', 'items-end']">
-            <div class="flex flex-col space-y-2 text-xs max-w-xs mx-2 order-2 items-start">
+        <div class="chat-message overflow-y-scroll " style="height: 350px">
+          <div v-for="message in messages"
+               :class="['flex',  {'justify-end' : USER.id == message.user.id }]">
+            <div class="flex flex-col space-y-2 item text-xs max-w-xs mx-2 order-2 items-end">
               <div><span
-                class="px-4 py-2 rounded-lg inline-block rounded-bl-none bg-gray-300 text-gray-600">{{
-                  message.message ? message.message : message
-                }}</span>
+                class="px-4 py-2 rounded-lg inline-block rounded-bl-none bg-gray-300 text-gray-600">
+                {{ message.message ? message.message : message }}</span>
               </div>
             </div>
             <img
-              src="https://images.unsplash.com/photo-1549078642-b2ba4bda0cdb?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=3&amp;w=144&amp;h=144"
+              v-if="USER.id !== message.user.id"
+              :src="message.user.avatar_path"
               alt="My profile" class="w-6 h-6 rounded-full order-1">
           </div>
         </div>
@@ -65,7 +66,7 @@
       <div class="border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
         <div class="relative flex">
           <input type="text"
-                 v-model="inputMessage"
+                 v-model="inputMessage.message"
                  placeholder="Write Something"
                  @keyup.enter="sendMessage(inputMessage)"
                  class="w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-4 bg-gray-200 rounded-full py-3">
@@ -87,21 +88,39 @@
 </template>
 
 <script>
+import {mapGetters} from "vuex";
+
 export default {
   data() {
     return {
       messages: [],
-      inputMessage: '',
+      inputMessage: {
+        message: '',
+        user: this.USER
+      },
     }
   },
   name: "ChatComponent",
   mounted() {
-    Echo.channel('message')
+    this.fetchMessages();
+
+    Echo.join('message')
+      .here(users => {
+        console.log('here')
+        console.log(users)
+      })
+      .joining(user => {
+        console.log('join')
+        console.log(user)
+      })
+      .leaving(user => {
+        console.log('leave')
+        console.log(user)
+      })
       .listen('MessageEvent', resp => {
           this.messages.push(resp.message)
         }
       )
-    this.fetchMessages();
   },
   methods: {
     fetchMessages() {
@@ -115,29 +134,12 @@ export default {
       axios.post('/api/chat', {message})
       this.inputMessage = '';
     }
-  }
+  },
+  computed: {
+    ...mapGetters(['USER'])
+  },
 }
 </script>
 
 <style scoped>
-.scrollbar-w-2::-webkit-scrollbar {
-  width: 0.25rem;
-  height: 0.25rem;
-}
-
-.scrollbar-track-blue-lighter::-webkit-scrollbar-track {
-  --bg-opacity: 1;
-  background-color: #f7fafc;
-  background-color: rgba(247, 250, 252, var(--bg-opacity));
-}
-
-.scrollbar-thumb-blue::-webkit-scrollbar-thumb {
-  --bg-opacity: 1;
-  background-color: #edf2f7;
-  background-color: rgba(237, 242, 247, var(--bg-opacity));
-}
-
-.scrollbar-thumb-rounded::-webkit-scrollbar-thumb {
-  border-radius: 0.25rem;
-}
 </style>

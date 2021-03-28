@@ -29,5 +29,10 @@ window.Echo = new Echo({
   wsHost: process.env.MIX_PUSHER_HOST,
   key: process.env.MIX_PUSHER_APP_KEY,
   forceTLS: false,
-  disableStats: true
+  disableStats: true,
+  auth: {
+    headers: {
+      Authorization: localStorage['token']
+    }
+  }
 });

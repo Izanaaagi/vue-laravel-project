@@ -14,5 +14,6 @@ use Illuminate\Support\Facades\Broadcast;
 */
 
 Broadcast::channel('message', function ($user) {
-    return true;
+    $user->avatar_path = $user->getAvatar();
+    return $user;
 });
