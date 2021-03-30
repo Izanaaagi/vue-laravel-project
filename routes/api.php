@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\TopicCommentController;
@@ -55,5 +56,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('/delete/{id}', [FriendController::class, 'deleteFriend'])->name('deleteFriend');
     });
 
-    Route::apiResource('chat', MessageController::class);
+    Route::apiResource('chat', ChatController::class);
 });
