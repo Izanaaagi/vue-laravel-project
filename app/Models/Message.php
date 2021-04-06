@@ -11,15 +11,18 @@ class Message extends Model
 
     protected $guarded = [];
 
-    public function fromContact()
+    public function from()
     {
         return $this->belongsTo(User::class, 'from', 'id');
     }
 
-    public function toContact()
+    public function to()
     {
         return $this->belongsTo(User::class, 'to', 'id');
     }
 
-
+    public function room()
+    {
+        return $this->belongsTo(Room::class);
+    }
 }

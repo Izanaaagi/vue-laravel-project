@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Events\MessageEvent;
+use App\Models\Room;
+use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -15,10 +17,15 @@ class ChatController extends Controller
      */
     public function index()
     {
-        $authUserMessages = auth()->user()->sentMessages()->groupBy('from')->get();
-        $anotherUserMessages = auth()->user()->receivedMessages()->groupBy('to');
+        $authUserMessages = auth()->user()->sentMessages()->groupBy('to')->get();
+        $anotherUserMessages = auth()->user()->receivedMessages()->groupBy('to', 'from')->get();
+        $messages = $authUserMessages->merge($anotherUserMessages)->latest();
 
-        return response()->json(['messages' => $authUserMessages]);
+        $messages->each(function ($message) {
+            $message->user->avatar_path = User::find($message->user->id)->getAvatar();
+        });
+
+        return response()->json(['messages' => $messages]);
     }
 
     /**
@@ -39,16 +46,36 @@ class ChatController extends Controller
      */
     public function store(Request $request)
     {
+        $messages = Message::with('from', 'to')
+            ->where(function ($query) use ($request) {
+                $query->where('from', $request->to)
+                    ->orWhere('from', auth()->user()->id);
+            })->where(function ($query) use ($request) {
+                $query->where('to', $request->to)
+                    ->orWhere('to', auth()->user()->id);
+            });
+
+        $isMessages = $messages->count();
+        $messages_room = 0;
+
+        if ($isMessages > 0) {
+            $messages_room = $messages->first()->room()->first();
+        } else {
+            $messages_room = Room::create();
+        }
+
         $message = auth()->user()->sentMessages()->create([
             'message' => $request->message,
-            'to' => $request->userId,
+            'to' => $request->to,
+            'room_id' => $messages_room->id
         ]);
+
+        $message->from = $message->from()->first();
+        $message->to = $message->to()->first();
 
         broadcast(new MessageEvent($message))->toOthers();
 
-        return response()->json([
-            'code' => 200
-        ]);
+        return response()->json(['message' => $message]);
     }
 
     /**
@@ -59,9 +86,22 @@ class ChatController extends Controller
      */
     public function show($id)
     {
-        $authUserMessages = auth()->user()->sentMessagesTo($id);
-        $anotherUserMessages = auth()->user()->receivedMessagesFrom($id);
-        $messages = $authUserMessages->merge($anotherUserMessages)->sortBy('created_at')->values()->all();
+//        $authUserMessages = auth()->user()->sentMessagesTo($id)->get();
+//        $anotherUserMessages = auth()->user()->receivedMessagesFrom($id)->get();
+//        $messages = $authUserMessages->merge($anotherUserMessages)->sortBy('created_at')->values()->all();
+//        return response()->json(['messages' => $messages]);
+
+        $messages = Message::with('from', 'to')
+            ->where(function ($query) use ($id) {
+                $query->where('from', $id)
+                    ->orWhere('from', auth()->user()->id);
+            })->where(function ($query) use ($id) {
+                $query->where('to', $id)
+                    ->orWhere('to', auth()->user()->id);
+            })
+            ->oldest()
+            ->get();
+
         return response()->json(['messages' => $messages]);
     }
 
@@ -71,7 +111,8 @@ class ChatController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public
+    function edit($id)
     {
         //
     }
@@ -83,7 +124,8 @@ class ChatController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public
+    function update(Request $request, $id)
     {
         //
     }
@@ -94,7 +136,8 @@ class ChatController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public
+    function destroy($id)
     {
         //
     }

@@ -46,28 +46,14 @@ class User extends Authenticatable
 
     public function sentMessages()
     {
-        return $this->hasMany(Message::class, 'from', 'id');
+        return $this->hasMany(Message::class, 'from', 'id')->with('toContact');
     }
 
-    public function receivedMessages()
-    {
-        return $this->hasMany(Message::class, 'to', 'id');
-    }
-
-    public function sentMessagesTo($id)
-    {
-        return $this->sentMessages()->where('from', $this->id)->where('to', $id)->get();
-    }
-
-    public function receivedMessagesFrom($id)
-    {
-        return $this->receivedMessages()->where('to', $this->id)->where('from', $id)->get();
-    }
 
     public function getUserById($id)
     {
         $user = $this->find($id);
-        $user->avatar_path = $this->getAvatar();
+        $user->avatar_path = $user->getAvatar();
         return $user;
     }
 

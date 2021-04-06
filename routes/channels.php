@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Broadcast;
 |
 */
 
-Broadcast::channel('message', function ($user) {
-    $user->avatar_path = $user->getAvatar();
+Broadcast::channel('chat.{userId}', function ($user, $userId) {
     return $user;
 });

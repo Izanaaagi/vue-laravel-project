@@ -3,70 +3,53 @@
     <div class="flex-1 p:2 sm:p-6 justify-between flex flex-col">
       <div class="flex sm:items-center justify-between py-3 border-b-2 border-gray-200">
         <div class="flex items-center space-x-4">
-          <img
-            src="https://images.unsplash.com/photo-1549078642-b2ba4bda0cdb?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=3&amp;w=144&amp;h=144"
-            alt="" class="w-10 sm:w-16 h-10 sm:h-16 rounded-full">
+          <router-link :to="{name: 'user', params: {id: CURRENT_USER_PROFILE.id} }">
+            <img
+              :src="CURRENT_USER_PROFILE.avatar_path"
+              alt="" class="w-10 sm:w-16 h-10 sm:h-16 rounded-full">
+          </router-link>
           <div class="flex flex-col leading-tight">
             <div class="text-2xl mt-1 flex items-center">
-              <span class="text-gray-700 mr-3">Anderson Vanhron</span>
+              <span class="text-gray-700 mr-3">{{ CURRENT_USER_PROFILE.name }}</span>
               <span class="text-green-500">
                   <svg width="10" height="10">
                      <circle cx="5" cy="5" r="5" fill="currentColor"></circle>
                   </svg>
                </span>
             </div>
-            <span class="text-lg text-gray-600">Junior Developer</span>
+            <span class="text-lg text-gray-600">{{ CURRENT_USER_PROFILE.email }}</span>
           </div>
         </div>
-        <div class="flex items-center space-x-2">
-          <button type="button"
-                  class="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                 class="h-6 w-6">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-          </button>
-          <button type="button"
-                  class="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                 class="h-6 w-6">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-            </svg>
-          </button>
-          <button type="button"
-                  class="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                 class="h-6 w-6">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-            </svg>
-          </button>
-        </div>
       </div>
-      <div id="messages"
-           class="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
-        <div class="chat-message overflow-y-scroll " style="height: 350px">
-          <div v-for="message in messages"
-               :class="['flex',  {'justify-end' : USER.id == message.user.id }]">
+      <square v-if="loading"></square>
+      <div
+        v-else
+        id="messages"
+        class="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
+        <div v-if="CHAT_ROOM" class="chat-message overflow-y-auto " style="height: 350px">
+          <div v-for="message in CHAT_MESSAGES"
+               :class="['flex',  {'justify-end' : USER.id == message.from.id }]">
             <div class="flex flex-col space-y-2 item text-xs max-w-xs mx-2 order-2 items-end">
               <div><span
                 class="px-4 py-2 rounded-lg inline-block rounded-bl-none bg-gray-300 text-gray-600">
-                {{ message.message ? message.message : message }}</span>
+                {{ message.message }}</span>
               </div>
             </div>
             <img
-              v-if="USER.id !== message.user.id"
-              :src="message.user.avatar_path"
-              alt="My profile" class="w-6 h-6 rounded-full order-1">
+              v-if="USER.id !== message.from.id"
+              :src="CURRENT_USER_PROFILE.avatar_path"
+              alt="My profile" class="w-8 h-8 rounded-full order-1">
           </div>
+        </div>
+        <div v-else
+             class="chat-message flex justify-center overflow-y-auto" style="height: 350px">
+          No messages Yet
         </div>
       </div>
       <div class="border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
         <div class="relative flex">
           <input type="text"
-                 v-model="inputMessage.message"
+                 v-model="inputMessage"
                  placeholder="Write Something"
                  @keyup.enter="sendMessage(inputMessage)"
                  class="w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-4 bg-gray-200 rounded-full py-3">
@@ -88,56 +71,86 @@
 </template>
 
 <script>
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 
 export default {
   data() {
     return {
-      messages: [],
-      inputMessage: {
-        message: '',
-        user: this.USER
-      },
+      userId: this.$route.params.userId,
+      inputMessage: '',
+      loading: true,
     }
   },
   name: "ChatComponent",
-  mounted() {
-    this.fetchMessages();
 
-    Echo.join('message')
-      .here(users => {
-        console.log('here')
-        console.log(users)
-      })
-      .joining(user => {
-        console.log('join')
-        console.log(user)
-      })
-      .leaving(user => {
-        console.log('leave')
-        console.log(user)
-      })
-      .listen('MessageEvent', resp => {
-          this.messages.push(resp.message)
+  created() {
+    this.USER_BY_ID({id: this.userId})
+    this.GET_CHAT_MESSAGES({id: this.userId})
+      .then(() => {
+        if (this.CHAT_ROOM) {
+          Echo.join(`chat.${this.CHAT_ROOM}`)
+            .here(users => {
+            })
+            .joining(user => {
+            })
+            .leaving(user => {
+            })
+            .listen('MessageEvent', resp => {
+                this.$store.commit('SEND_CHAT_MESSAGE', resp.message)
+              }
+            )
+          this.scrollToBottom()
         }
-      )
+        this.loading = false
+      })
   },
+
+  updated() {
+    this.scrollToBottom()
+  },
+
+  destroyed() {
+    Echo.leave(`chat.${this.CHAT_ROOM}`)
+  },
+
   methods: {
-    fetchMessages() {
-      axios.get('/api/chat')
-        .then(resp => {
-          this.messages = resp.data.messages;
-        })
-    },
+    ...mapActions(['USER_BY_ID', 'SEND_CHAT_MESSAGE', 'GET_CHAT_MESSAGES']),
     sendMessage(message) {
-      this.messages.push(message)
-      axios.post('/api/chat', {message})
-      this.inputMessage = '';
+      if (message !== '') {
+        this.SEND_CHAT_MESSAGE({message, to: this.CURRENT_USER_PROFILE.id})
+        this.inputMessage = '';
+      }
+    },
+    scrollToBottom() {
+      if (this.$el.querySelector('.chat-message')) {
+        let messagesContainer = this.$el.querySelector('.chat-message')
+        messagesContainer.scrollTop = messagesContainer.scrollHeight
+      }
     }
   },
+
   computed: {
-    ...mapGetters(['USER'])
+    ...mapGetters(['USER', 'CURRENT_USER_PROFILE', 'CHAT_MESSAGES', 'CHAT_ROOM'])
   },
+
+  watch: {
+    CHAT_ROOM(newValue, oldValue) {
+      if (newValue !== oldValue && oldValue == null) {
+        Echo.join(`chat.${this.CHAT_ROOM}`)
+          .here(users => {
+          })
+          .joining(user => {
+          })
+          .leaving(user => {
+          })
+          .listen('MessageEvent', resp => {
+              this.$store.commit('SEND_CHAT_MESSAGE', resp.message)
+            }
+          )
+        this.scrollToBottom()
+      }
+    }
+  }
 }
 </script>
 

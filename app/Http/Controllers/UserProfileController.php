@@ -48,7 +48,7 @@ class  UserProfileController extends Controller
      */
     public function show($id)
     {
-        $user = new User;
+        $user = new User();
         $user = $user->getUserById($id);
         return response()->json($user);
     }

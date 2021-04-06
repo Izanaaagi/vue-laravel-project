@@ -19,7 +19,9 @@ export let store = new Vuex.Store({
     categories: [],
     categoryTopics: [],
     currentTopic: {},
-    topicComments: []
+    topicComments: [],
+    chatMessages: [],
+    chatRoom: []
   },
   actions: {
     register({commit}, user) {
@@ -86,17 +88,15 @@ export let store = new Vuex.Store({
     },
 
     USER_BY_ID({commit}, payload) {
-      return new Promise((resolve, reject) => {
-        axios.get(`/api/users/${payload.id}`)
-          .then(resp => {
-            let user = resp.data
-            commit('SET_CURRENT_USER_PROFILE', user)
-            resolve(resp)
-          })
-          .catch(err => {
-            reject(err)
-          })
-      })
+
+      return axios.get(`/api/users/${payload.id}`)
+        .then(resp => {
+          let user = resp.data
+          commit('SET_CURRENT_USER_PROFILE', user)
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
 
     USERS_LIST({commit}) {
@@ -114,18 +114,15 @@ export let store = new Vuex.Store({
     },
 
     FRIENDS_LIST({commit}) {
-      return new Promise((resolve, reject) => {
-        axios.get('/api/friends')
-          .then(resp => {
-            let friends = resp.data.friends
-            let requests = resp.data.requests
-            commit('SET_FRIENDS_LIST', {friends, requests})
-            resolve(resp)
-          })
-          .catch(err => {
-            reject(err)
-          })
-      })
+      return axios.get('/api/friends')
+        .then(resp => {
+          let friends = resp.data.friends
+          let requests = resp.data.requests
+          commit('SET_FRIENDS_LIST', {friends, requests})
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
 
     FRIEND_ACCEPT({commit}, payload) {
@@ -185,16 +182,14 @@ export let store = new Vuex.Store({
       })
     },
     GET_AVATAR({commit}, payload) {
-      return new Promise((resolve, reject) => {
-        axios.get(`/api/avatar/${payload.id}`)
-          .then(resp => {
-            commit('SET_AVATAR', resp.data.path)
-          })
-          .catch(err => {
-            reject(err)
-          })
+      return axios.get(`/api/avatar/${payload.id}`)
+        .then(resp => {
+          commit('SET_AVATAR', resp.data.path)
+        })
+        .catch(err => {
+          console.log(err)
+        })
 
-      })
     },
     GET_FORUM_CATEGORIES({commit}) {
       return new Promise((resolve, reject) => {
@@ -316,6 +311,31 @@ export let store = new Vuex.Store({
           })
       })
     },
+    GET_CHAT_MESSAGES({commit}, payload) {
+      return axios.get(`/api/chat/${payload.id}`)
+        .then(resp => {
+          let messages = resp.data.messages;
+          let chatRoom = messages.length > 0 ? messages[0].room_id : null
+          commit('SET_CHAT_MESSAGES', messages)
+          commit('SET_CHAT_ROOM', chatRoom)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    SEND_CHAT_MESSAGE({commit}, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post('/api/chat', {message: payload.message, to: payload.to})
+          .then(resp => {
+            let message = resp.data.message;
+            commit('SEND_CHAT_MESSAGE', message)
+            if (!this.chatRoom) commit('SET_CHAT_ROOM', message.room_id)
+          })
+          .catch(err => {
+            reject(err)
+          })
+      })
+    },
   },
   mutations: {
     AUTH_REQUEST(state) {
@@ -372,8 +392,18 @@ export let store = new Vuex.Store({
     },
     SET_COMMENTS(state, comments) {
       state.topicComments = comments;
+    },
+    SET_CHAT_MESSAGES(state, messages) {
+      state.chatMessages = messages;
+    },
+    SET_CHAT_ROOM(state, chatRoom) {
+      state.chatRoom = chatRoom;
+    },
+    SEND_CHAT_MESSAGE(state, message) {
+      state.chatMessages = state.chatMessages.concat(message)
     }
   },
+
   getters: {
     isLoggedIn: state => !!state.token,
     authStatus: state => state.status,
@@ -384,5 +414,7 @@ export let store = new Vuex.Store({
     CATEGORY_TOPICS: state => state.categoryTopics,
     CURRENT_TOPIC: state => state.currentTopic,
     TOPIC_COMMENTS: state => state.topicComments,
+    CHAT_MESSAGES: state => state.chatMessages,
+    CHAT_ROOM: state => state.chatRoom,
   }
 })

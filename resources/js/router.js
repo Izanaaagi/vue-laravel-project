@@ -80,7 +80,7 @@ export let router = new VueRouter({
           component: UsersListComponent,
         },
         {
-          path: '/chat',
+          path: '/chat/:userId',
           name: 'chat',
           component: ChatComponent,
         },

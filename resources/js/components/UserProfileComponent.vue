@@ -1,6 +1,7 @@
 <template>
   <div class="py-12">
-    <div class="max-w-10xl mx-auto sm:px-6 lg:px-8">
+    <square v-if="loading"></square>
+    <div v-else class="max-w-10xl mx-auto sm:px-6 lg:px-8">
       <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg flex flex-row">
         <div>
           <img :src="$store.state.avatar"
@@ -12,7 +13,8 @@
           <b>Name:</b> {{ CURRENT_USER_PROFILE.name }}
           <b>Email:</b> {{ CURRENT_USER_PROFILE.email }}
           <b>Date of Registration: </b> {{ CURRENT_USER_PROFILE.created_at }}
-          <div v-show="!isAuthUser">
+          <div v-show="!isAuthUser"
+               class="flex flex-row">
             <div v-if="isFriend">
               <button @click="FRIEND_REMOVE({id: CURRENT_USER_PROFILE.id})"
                       class="border bg-red-600 hover:bg-red-700 rounded-md py-2 px-3">
@@ -26,6 +28,12 @@
                 Add to Friends
               </button>
             </div>
+            <router-link
+              :to="{name: 'chat', params:{userId: this.$route.params.id}}"
+              class="border bg-blue-600 hover:bg-blue-700 rounded-md py-2 px-3">
+              Chat
+            </router-link>
+
           </div>
           <div
             v-show="isAuthUser"
@@ -93,7 +101,8 @@ export default {
   name: "UserProfileComponent",
   data() {
     return {
-      file: ''
+      file: '',
+      loading: true
     }
   },
   methods: {
@@ -129,6 +138,9 @@ export default {
         this.USER_BY_ID({id: this.$route.params.id})
         this.FRIENDS_LIST()
         this.GET_AVATAR({id: this.$route.params.id})
+          .then(() => {
+            this.loading = false
+          })
       },
     },
   },
