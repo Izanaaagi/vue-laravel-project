@@ -17,15 +17,30 @@ class ChatController extends Controller
      */
     public function index()
     {
-        $authUserMessages = auth()->user()->sentMessages()->groupBy('to')->get();
-        $anotherUserMessages = auth()->user()->receivedMessages()->groupBy('to', 'from')->get();
-        $messages = $authUserMessages->merge($anotherUserMessages)->latest();
+        $messages = Message::where('from', auth()->user()->id)
+            ->orWhere('to', auth()->user()->id)
+            ->latest()
+            ->get()
+            ->unique('room_id');
 
-        $messages->each(function ($message) {
-            $message->user->avatar_path = User::find($message->user->id)->getAvatar();
+        $chats = collect();
+        $messages->each(function ($message) use ($chats) {
+            if ($message->from !== auth()->user()->id xor $message->to !== auth()->user()->id) {
+                $chats->push(collect([
+                    'user' => User::find($message->to),
+                    'last_message' => $message->message,
+                    'created_at' => $message->created_at,
+                    'chat_room' => $message->room_id
+                ]));
+            }
         });
 
-        return response()->json(['messages' => $messages]);
+        $chats->each(function ($chat) {
+            $chat['user']->avatar_path = User::find($chat['user']->id)->getAvatar();
+        });
+
+
+        return response()->json(['chats' => $chats]);
     }
 
     /**

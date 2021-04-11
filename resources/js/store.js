@@ -20,6 +20,7 @@ export let store = new Vuex.Store({
     categoryTopics: [],
     currentTopic: {},
     topicComments: [],
+    chatsList: [],
     chatMessages: [],
     chatRoom: []
   },
@@ -324,18 +325,26 @@ export let store = new Vuex.Store({
         })
     },
     SEND_CHAT_MESSAGE({commit}, payload) {
-      return new Promise((resolve, reject) => {
-        axios.post('/api/chat', {message: payload.message, to: payload.to})
-          .then(resp => {
-            let message = resp.data.message;
-            commit('SEND_CHAT_MESSAGE', message)
-            if (!this.chatRoom) commit('SET_CHAT_ROOM', message.room_id)
-          })
-          .catch(err => {
-            reject(err)
-          })
-      })
+      return axios.post('/api/chat', {message: payload.message, to: payload.to})
+        .then(resp => {
+          let message = resp.data.message;
+          commit('SEND_CHAT_MESSAGE', message)
+          if (!this.chatRoom) commit('SET_CHAT_ROOM', message.room_id)
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
+    GET_CHATS({commit}, payload) {
+      axios.get('/api/chat')
+        .then(resp => {
+          commit('SET_CHATS_LIST', resp.data.chats)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+
   },
   mutations: {
     AUTH_REQUEST(state) {
@@ -401,6 +410,9 @@ export let store = new Vuex.Store({
     },
     SEND_CHAT_MESSAGE(state, message) {
       state.chatMessages = state.chatMessages.concat(message)
+    },
+    SET_CHATS_LIST(state, chatsList) {
+      state.chatsList = chatsList;
     }
   },
 
@@ -416,5 +428,6 @@ export let store = new Vuex.Store({
     TOPIC_COMMENTS: state => state.topicComments,
     CHAT_MESSAGES: state => state.chatMessages,
     CHAT_ROOM: state => state.chatRoom,
+    CHATS_LIST: state => state.chatsList
   }
 })

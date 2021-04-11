@@ -29,7 +29,7 @@
               </button>
             </div>
             <router-link
-              :to="{name: 'chat', params:{userId: this.$route.params.id}}"
+              :to="{name: 'chatRoom', params:{userId: this.$route.params.id}}"
               class="border bg-blue-600 hover:bg-blue-700 rounded-md py-2 px-3">
               Chat
             </router-link>

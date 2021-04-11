@@ -12,6 +12,7 @@ import CategoryComponent from "./components/CategoryComponent";
 import TopicComponent from "./components/TopicComponent";
 import CreateTopicComponent from "./components/CreateTopicComponent";
 import ChatComponent from "./components/ChatComponent";
+import ChatsComponent from "./components/ChatsComponent";
 
 Vue.use(VueRouter);
 
@@ -80,8 +81,13 @@ export let router = new VueRouter({
           component: UsersListComponent,
         },
         {
+          path: '/chat',
+          name: 'chatsList',
+          component: ChatsComponent,
+        },
+        {
           path: '/chat/:userId',
-          name: 'chat',
+          name: 'chatRoom',
           component: ChatComponent,
         },
       ]
