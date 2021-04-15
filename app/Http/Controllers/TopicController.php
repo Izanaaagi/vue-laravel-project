@@ -61,7 +61,7 @@ class TopicController extends Controller
     {
         $topic = Topic::find($topicId);
         $topic->user = User::find($topic->user_id);
-        $topic->user->avatar_path = asset(Storage::url($topic->user->avatar_path));
+        $topic->user->avatar_path = User::find($topic->user->id)->getAvatar();
         $topic->likes = $topic->likesUp();
         $topic->dislikes = $topic->likesDown();
         $topic->isLiked = $topic->isLikedBy(auth()->user());

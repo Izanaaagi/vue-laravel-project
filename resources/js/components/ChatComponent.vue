@@ -1,6 +1,7 @@
 <template>
   <div class="pb-10 px-20">
-    <div class="flex-1 p:2 sm:p-6 justify-between flex flex-col">
+    <square v-if="loading"></square>
+    <div v-else class="flex-1 p:2 sm:p-6 justify-between flex flex-col">
       <div class="flex sm:items-center justify-between py-3 border-b-2 border-gray-200">
         <div class="flex items-center space-x-4">
           <router-link :to="{name: 'user', params: {id: CURRENT_USER_PROFILE.id} }">
@@ -11,19 +12,12 @@
           <div class="flex flex-col leading-tight">
             <div class="text-2xl mt-1 flex items-center">
               <span class="text-gray-700 mr-3">{{ CURRENT_USER_PROFILE.name }}</span>
-              <span class="text-green-500">
-                  <svg width="10" height="10">
-                     <circle cx="5" cy="5" r="5" fill="currentColor"></circle>
-                  </svg>
-               </span>
             </div>
             <span class="text-lg text-gray-600">{{ CURRENT_USER_PROFILE.email }}</span>
           </div>
         </div>
       </div>
-      <square v-if="loading"></square>
       <div
-        v-else
         id="messages"
         class="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
         <div v-if="CHAT_ROOM" class="chat-message overflow-y-auto " style="height: 350px">

@@ -17,6 +17,7 @@ class ChatController extends Controller
      */
     public function index()
     {
+
         $messages = Message::where('from', auth()->user()->id)
             ->orWhere('to', auth()->user()->id)
             ->latest()
@@ -27,7 +28,7 @@ class ChatController extends Controller
         $messages->each(function ($message) use ($chats) {
             if ($message->from !== auth()->user()->id xor $message->to !== auth()->user()->id) {
                 $chats->push(collect([
-                    'user' => User::find($message->to),
+                    'user' => $message->from == auth()->user()->id ? User::find($message->to) : User::find($message->from),
                     'last_message' => $message->message,
                     'created_at' => $message->created_at,
                     'chat_room' => $message->room_id

@@ -1,7 +1,8 @@
 <template>
-  <div class=" py-12">
-    <div
-      class="max-w-7xl flex flex-row justify-around mx-auto sm:px-6 lg:px-8">
+  <div class="py-12">
+    <square v-if="loading"></square>
+    <div v-else
+         class="max-w-7xl flex flex-row justify-around mx-auto sm:px-6 lg:px-8">
       <router-link
         class="lg:w-1/3 no-underline"
         :to="{name: 'forumCategory', params: {category: category.id}}"
@@ -44,11 +45,19 @@ import {mapActions, mapGetters} from "vuex";
 
 export default {
   name: "ForumComponent",
+  data() {
+    return {
+      loading: true
+    }
+  },
   methods: {
     ...mapActions(['GET_FORUM_CATEGORIES'])
   },
   mounted() {
-    this.GET_FORUM_CATEGORIES();
+    this.GET_FORUM_CATEGORIES()
+      .then(() => {
+        this.loading = false
+      });
   },
   computed: {
     ...mapGetters(['FORUM_CATEGORIES'])

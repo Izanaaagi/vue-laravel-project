@@ -1,29 +1,10 @@
 <template>
   <div class="py-12">
-    <div class="max-w-10xl mx-auto sm:px-6 lg:px-8">
+    <square v-if="loading"></square>
+    <div v-else class="max-w-10xl mx-auto sm:px-6 lg:px-8">
       <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-
-        <!--        @foreach($users as $user)-->
-        <!--        <div class="m-3.5 flex mb-2.5 flex-row">-->
-        <!--          <div>-->
-        <!--            @if($user->isProfilePhoto())-->
-        <!--            <a href="{{(route('getUser', ['id' => $user['id']]))}}">-->
-        <!--              <img width="200px" class="rounded-full"-->
-        <!--                   src="{{$user->getProfilePhotoUrlAttribute()}}"-->
-        <!--                   alt="">-->
-        <!--            </a>-->
-        <!--            @else-->
-        <!--            <a href="{{(route('getUser', ['id' => $user['id']]))}}">-->
-        <!--              <img-->
-        <!--                width="200px" class="rounded-full"-->
-        <!--                src="/storage/profile-photos/default-avatar.jpg"-->
-        <!--                alt="">-->
-        <!--            </a>-->
-        <!--            @endif-->
-        <!--          </div>-->
-        <!--          <div class="ml-5 flex flex-col">-->
         <div
-          v-for="user in $store.getters.USERS_LIST"
+          v-for="user in USERS_LIST.data"
           class="m-3.5 flex mb-3 flex-row">
           <div>
             <router-link
@@ -46,26 +27,39 @@
             <b>Email:</b> {{ user.email }}
           </div>
         </div>
+        <tailable-pagination
+          :data="USERS_LIST"
+          :show-numbers="true"
+          :hide-when-empty="true"
+          @page-changed="payload => GET_USERS_LIST({page: payload}) ">
+        </tailable-pagination>
       </div>
     </div>
-    <!--        @endforeach-->
-    <!--      </div>-->
-    <!--    </div>-->
   </div>
 </template>
 
 <script>
 
 
-import {mapActions} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 
 export default {
   name: "UsersListComponent",
+  data() {
+    return {
+      loading: true
+    }
+  },
   methods: {
-    ...mapActions(['USERS_LIST'])
+    ...mapActions(['GET_USERS_LIST']),
   },
   mounted() {
-    this.USERS_LIST()
+    this.GET_USERS_LIST({page: 1}).then(() => {
+      this.loading = false
+    })
+  },
+  computed: {
+    ...mapGetters(['USERS_LIST'])
   }
 }
 </script>

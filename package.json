@@ -32,6 +32,9 @@
         "vue-template-compiler": "2.6.11"
     },
     "dependencies": {
+        "@ocrv/vue-tailwind-pagination": "0.0.4",
+        "laravel-vue-tailwind-pagination": "^0.1.8",
+        "tailable-pagination": "^0.1.22",
         "vue-router": "^3.5.1",
         "vue-spinners": "^1.0.2",
         "vuex": "^3.6.2"

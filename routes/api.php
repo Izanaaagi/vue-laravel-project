@@ -48,6 +48,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('forum.topics', TopicController::class);
     Route::apiResource('forum.topics.likes', TopicLikeController::class);
     Route::apiResource('forum.topics.comments', TopicCommentController::class);
+    Route::apiResource('chat', ChatController::class);
 
     Route::prefix('friends')->group(function () {
         Route::get('/', [FriendController::class, 'index'])->name('friends');
@@ -55,6 +56,4 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/sendRequest/{id}', [FriendController::class, 'sendRequest'])->name('sendRequest');
         Route::delete('/delete/{id}', [FriendController::class, 'deleteFriend'])->name('deleteFriend');
     });
-
-    Route::apiResource('chat', ChatController::class);
 });

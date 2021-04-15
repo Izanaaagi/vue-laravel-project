@@ -100,9 +100,9 @@ export let store = new Vuex.Store({
         })
     },
 
-    USERS_LIST({commit}) {
+    GET_USERS_LIST({commit}, payload) {
       return new Promise((resolve, reject) => {
-        axios.get('/api/usersList')
+        axios.get(`/api/usersList?page=${payload.page}`)
           .then(resp => {
             let users = resp.data.users
             commit('SET_USERS_LIST', users)
@@ -193,28 +193,24 @@ export let store = new Vuex.Store({
 
     },
     GET_FORUM_CATEGORIES({commit}) {
-      return new Promise((resolve, reject) => {
-        axios.get('/api/forum')
-          .then(resp => {
-            let categories = resp.data.categories
-            commit('SET_FORUM_CATEGORIES', categories)
-          })
-          .catch(err => {
-            reject(err)
-          })
-      })
+      return axios.get('/api/forum')
+        .then(resp => {
+          let categories = resp.data.categories
+          commit('SET_FORUM_CATEGORIES', categories)
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
     GET_CATEGORY_TOPICS({commit}, payload) {
-      return new Promise((resolve, reject) => {
-        axios.get(`/api/forum/${payload.categoryId}`)
-          .then(resp => {
-            let topics = resp.data.topics
-            commit('SET_CATEGORY_TOPICS', topics)
-          })
-          .catch(err => {
-            reject(err)
-          })
-      })
+      return axios.get(`/api/forum/${payload.categoryId}?page=${payload.page}`)
+        .then(resp => {
+          let topics = resp.data.topics
+          commit('SET_CATEGORY_TOPICS', topics)
+        })
+        .catch(err => {
+          reject(err)
+        })
     },
     GET_TOPIC_BY_ID({commit}, payload) {
       return new Promise((resolve, reject) => {
@@ -335,7 +331,7 @@ export let store = new Vuex.Store({
           console.log(err)
         })
     },
-    GET_CHATS({commit}, payload) {
+    GET_CHATS({commit}) {
       axios.get('/api/chat')
         .then(resp => {
           commit('SET_CHATS_LIST', resp.data.chats)

@@ -1,6 +1,7 @@
 <template>
   <div class="py-12">
-    <div class="max-w-10xl mx-auto sm:px-6 lg:px-8">
+    <square v-if="loading"></square>
+    <div v-else class="max-w-10xl mx-auto sm:px-6 lg:px-8">
       <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
         <div class="flex flex-row justify-around">
           <div class="flex flex-col text-center"><span class="text-2xl">My friends</span>
@@ -47,7 +48,9 @@ import {mapActions} from "vuex";
 export default {
   name: "FriendsListComponent",
   data() {
-    return {}
+    return {
+      loading: true
+    }
   },
   methods: {
     ...mapActions(['FRIENDS_LIST']),
@@ -68,7 +71,10 @@ export default {
   }
   ,
   mounted() {
-    this.FRIENDS_LIST();
+    this.FRIENDS_LIST()
+      .then(() => {
+        this.loading = false
+      });
   }
 }
 </script>
