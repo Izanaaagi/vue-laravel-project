@@ -5,13 +5,16 @@ Vue.use(Vuex);
 
 export let store = new Vuex.Store({
   state: {
-    errors: [],
+    errors: {},
+
     avatar: null,
     status: '',
     token: localStorage.getItem('token') || '',
     authUser: {},
     currentUserProfile: {},
+
     usersList: [],
+
     friends: {
       acceptedFriends: [],
       requests: []
@@ -21,24 +24,22 @@ export let store = new Vuex.Store({
     categoryTopics: [],
     currentTopic: {},
     topicComments: [],
+
     chatsList: [],
     chatMessages: [],
-    chatRoom: []
+    chatRoom: [],
+
   },
   actions: {
     register({commit}, user) {
-      return new Promise((resolve, reject) => {
-        commit('AUTH_REQUEST')
-        axios.post('/api/register', user)
-          .then(resp => {
-            commit('AUTH_SUCCESS', user)
-            resolve(resp)
-          })
-          .catch(err => {
-            commit('AUTH_ERROR', err)
-            reject(err)
-          })
-      })
+      commit('AUTH_REQUEST')
+      return axios.post('/api/register', user)
+        .then(resp => {
+          commit('AUTH_SUCCESS', user)
+        })
+        .catch(err => {
+          commit('AUTH_ERROR', err)
+        })
     },
     login({commit}, user) {
       return new Promise((resolve, reject) => {
@@ -170,18 +171,16 @@ export let store = new Vuex.Store({
       })
     },
     UPLOAD_AVATAR({commit}, payload) {
-      return new Promise((resolve, reject) => {
-        axios.post('/api/avatar',
-          payload.formData,
-          {headers: {'Content-type': 'multipart/form-data'}})
-          .then(resp => {
-            commit('SET_AVATAR', resp.data.path)
-            resolve(resp)
-          })
-          .catch(err => {
-            reject(err)
-          })
-      })
+      return axios.post('/api/avatar',
+        payload.formData,
+        {headers: {'Content-type': 'multipart/form-data'}})
+        .then(resp => {
+          commit('SET_AVATAR', resp.data.path)
+          commit('DELETE_ERRORS')
+        })
+        .catch(err => {
+          commit('SET_ERRORS', err.response.data.errors)
+        })
     },
     GET_AVATAR({commit}, payload) {
       return axios.get(`/api/avatar/${payload.id}`)
@@ -296,13 +295,14 @@ export let store = new Vuex.Store({
         })
     },
     CREATE_TOPIC({commit}, payload) {
-      axios.post(`/api/forum/${payload.categoryId}/topics`, {title: payload.title, text: payload.text})
+      return axios.post(`/api/forum/${payload.categoryId}/topics`, {title: payload.title, text: payload.text})
         .then(resp => {
           let topics = resp.data.topics
           commit('SET_CATEGORY_TOPICS', topics)
+          commit('DELETE_ERRORS')
         })
         .catch(err => {
-          reject(err)
+          commit('SET_ERRORS', err.response.data.errors)
         })
     },
     GET_CHAT_MESSAGES({commit}, payload) {
@@ -393,19 +393,25 @@ export let store = new Vuex.Store({
       state.currentTopic.isDisliked = true
     },
     SET_COMMENTS(state, comments) {
-      state.topicComments = comments;
+      state.topicComments = comments
     },
     SET_CHAT_MESSAGES(state, messages) {
-      state.chatMessages = messages;
+      state.chatMessages = messages
     },
     SET_CHAT_ROOM(state, chatRoom) {
-      state.chatRoom = chatRoom;
+      state.chatRoom = chatRoom
     },
     SEND_CHAT_MESSAGE(state, message) {
       state.chatMessages = state.chatMessages.concat(message)
     },
     SET_CHATS_LIST(state, chatsList) {
-      state.chatsList = chatsList;
+      state.chatsList = chatsList
+    },
+    SET_ERRORS(state, errors) {
+      state.errors = errors
+    },
+    DELETE_ERRORS(state) {
+      state.errors = []
     }
   },
 
@@ -421,6 +427,7 @@ export let store = new Vuex.Store({
     TOPIC_COMMENTS: state => state.topicComments,
     CHAT_MESSAGES: state => state.chatMessages,
     CHAT_ROOM: state => state.chatRoom,
-    CHATS_LIST: state => state.chatsList
+    CHATS_LIST: state => state.chatsList,
+    ERRORS: state => state.errors
   }
 })

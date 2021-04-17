@@ -14,7 +14,9 @@
             Registration
           </h2>
 
-          <form class="mt-10" method="GET" @submit.prevent="register">
+          <div
+            @keydown.enter="register"
+            class="mt-10">
             <!-- Name Input -->
             <label for="name" class="block text-xs font-semibold text-gray-600 uppercase">Name</label>
             <input id="name" type="text" v-model='name' name="name" placeholder="Name"
@@ -47,7 +49,7 @@
 
             <!-- Auth Buttton -->
             <button
-              type="submit"
+              @click="register"
               class="w-full py-3 mt-10 bg-gray-800 rounded-sm
                     font-medium text-white uppercase
                     focus:outline-none hover:bg-gray-700 hover:shadow-none">
@@ -60,7 +62,7 @@
                 Have an Account?
               </router-link>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>

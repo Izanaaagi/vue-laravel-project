@@ -2,6 +2,24 @@
   <section class="text-gray-600 body-font relative">
     <div class="container px-5 py-24 mx-auto">
       <div class="flex flex-col text-center w-full mb-12">
+        <div v-if="Object.keys(ERRORS).length > 0" class="bg-red-50 border-l-8 border-red-900 mb-2">
+          <div class="flex items-center">
+            <div class="p-2">
+              <div class="flex items-center">
+                <div class="ml-2">
+                </div>
+                <p class="px-6 py-4 text-red-900 font-semibold text-lg">Please fix the
+                  following
+                  errors.</p>
+              </div>
+              <div class="px-16 mb-4">
+                <li v-for="error in ERRORS" class="text-md font-bold text-red-500 text-sm">
+                  {{ error[0] }}
+                </li>
+              </div>
+            </div>
+          </div>
+        </div>
         <h1 class="sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900">Create Topic</h1>
       </div>
       <div class="lg:w-1/2 md:w-2/3 mx-auto">
@@ -43,7 +61,7 @@
 </template>
 
 <script>
-import {mapActions} from "vuex";
+import {mapActions, mapGetters, mapMutations} from "vuex";
 import {router} from "../router";
 
 export default {
@@ -57,10 +75,21 @@ export default {
   },
   methods: {
     ...mapActions(['CREATE_TOPIC']),
+    ...mapMutations(['DELETE_ERRORS']),
     createTopic() {
       this.CREATE_TOPIC({categoryId: this.categoryId, title: this.title, text: this.text})
-      router.push({name: 'forumCategory', props: {category: this.categoryId}})
+        .then(() => {
+          if (this.ERRORS.length === 0) {
+            router.push({name: 'forumCategory', props: {category: this.categoryId}})
+          }
+        })
     }
+  },
+  computed: {
+    ...mapGetters(['ERRORS'])
+  },
+  destroyed() {
+    this.DELETE_ERRORS()
   }
 }
 </script>

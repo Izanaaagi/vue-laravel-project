@@ -2,7 +2,27 @@
   <div class="py-12">
     <square v-if="loading"></square>
     <div v-else class="max-w-10xl mx-auto sm:px-6 lg:px-8">
+      <div v-if="Object.keys(ERRORS).length > 0"
+           class="bg-red-50 border-l-8 border-red-900 mb-2">
+        <div class="flex items-center">
+          <div class="p-2">
+            <div class="flex items-center">
+              <div class="ml-2">
+              </div>
+              <p class="px-6 py-4 text-red-900 font-semibold text-lg">Please fix the
+                following
+                errors.</p>
+            </div>
+            <div class="px-16 mb-4">
+              <li v-for="error in ERRORS" class="text-md font-bold text-red-500 text-sm">
+                {{ error[0] }}
+              </li>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg flex flex-row">
+
         <div>
           <img :src="$store.state.avatar"
                width="150px"
@@ -95,7 +115,7 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
+import {mapActions, mapGetters, mapMutations} from "vuex";
 
 export default {
   name: "UserProfileComponent",
@@ -112,7 +132,9 @@ export default {
       'FRIEND_REMOVE',
       'FRIENDS_LIST',
       'GET_AVATAR',
-      'UPLOAD_AVATAR']),
+      'UPLOAD_AVATAR',
+    ]),
+    ...mapMutations(['DELETE_ERRORS']),
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
     },
@@ -123,7 +145,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['CURRENT_USER_PROFILE']),
+    ...mapGetters(['CURRENT_USER_PROFILE', 'ERRORS']),
     isFriend() {
       return !!this.$store.state.friends.acceptedFriends.find(friend => friend.id === this.CURRENT_USER_PROFILE.id)
     },
@@ -144,6 +166,9 @@ export default {
       },
     },
   },
+  destroyed() {
+    this.DELETE_ERRORS()
+  }
 }
 </script>
 
