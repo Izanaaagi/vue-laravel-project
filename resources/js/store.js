@@ -5,6 +5,7 @@ Vue.use(Vuex);
 
 export let store = new Vuex.Store({
   state: {
+    errors: [],
     avatar: null,
     status: '',
     token: localStorage.getItem('token') || '',
@@ -285,28 +286,24 @@ export let store = new Vuex.Store({
       })
     },
     DELETE_TOPIC({commit}, payload) {
-      return new Promise((resolve, reject) => {
-        axios.delete(`/api/forum/${payload.categoryId}/topics/${payload.topicId}`)
-          .then(resp => {
-            let topics = resp.data.topics
-            commit('SET_CATEGORY_TOPICS', topics)
-          })
-          .catch(err => {
-            reject(err)
-          })
-      })
+      return axios.delete(`/api/forum/${payload.categoryId}/topics/${payload.topicId}`)
+        .then(resp => {
+          let topics = resp.data.topics
+          commit('SET_CATEGORY_TOPICS', topics)
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
     CREATE_TOPIC({commit}, payload) {
-      return new Promise((resolve, reject) => {
-        axios.post(`/api/forum/${payload.categoryId}/topics`, {title: payload.title, text: payload.text})
-          .then(resp => {
-            let topics = resp.data.topics
-            commit('SET_CATEGORY_TOPICS', topics)
-          })
-          .catch(err => {
-            reject(err)
-          })
-      })
+      axios.post(`/api/forum/${payload.categoryId}/topics`, {title: payload.title, text: payload.text})
+        .then(resp => {
+          let topics = resp.data.topics
+          commit('SET_CATEGORY_TOPICS', topics)
+        })
+        .catch(err => {
+          reject(err)
+        })
     },
     GET_CHAT_MESSAGES({commit}, payload) {
       return axios.get(`/api/chat/${payload.id}`)

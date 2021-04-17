@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TopicRequest;
 use App\Models\Category;
 use App\Models\Topic;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class TopicController extends Controller
 {
@@ -35,14 +36,19 @@ class TopicController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $categoryId)
+    public function store(TopicRequest $request, $categoryId)
     {
-        $text = $request->text;
-        $title = $request->title;
-        $topic = new Topic();
-        $topic->createTopic($categoryId, $text, $title);
 
-        $topics = Category::find($categoryId)->topics();
+        $validator = Validator::make($request->all(), $request->rules());
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $topic = new Topic();
+        $topic->createTopic($categoryId, $request->title, $request->text);
+
+        $topics = Category::find($categoryId)->topics()->paginate(5);
         foreach ($topics as $topic) {
             $user = User::find($topic->user_id);
             $topic->user_name = $user->name;
@@ -107,7 +113,7 @@ class TopicController extends Controller
         $topic = Topic::find($topicId);
         if ($topic->isTopicBy(auth()->id())) {
             $topic->deleteTopic($topic->id);
-            $topics = Category::find($categoryId)->topics();
+            $topics = Category::find($categoryId)->topics()->paginate(5);
             foreach ($topics as $topic) {
                 $user = User::find($topic->user_id);
                 $topic->user_name = $user->name;

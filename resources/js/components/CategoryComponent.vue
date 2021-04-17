@@ -84,7 +84,6 @@ export default {
     ...mapGetters(['CATEGORY_TOPICS', 'USER']),
   },
   mounted() {
-    console.log(this.categoryId)
     this.GET_CATEGORY_TOPICS({categoryId: this.categoryId})
       .then(() => {
         this.loading = false

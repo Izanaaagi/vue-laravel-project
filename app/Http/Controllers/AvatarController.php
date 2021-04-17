@@ -37,6 +37,13 @@ class AvatarController extends Controller
      */
     public function store(Request $request)
     {
+        $validator = validator($request->file(), [
+            'image' => 'image'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
         $user = auth()->user();
         $file = $request->file('image');
         $user->uploadAvatar($file);
