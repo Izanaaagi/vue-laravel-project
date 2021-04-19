@@ -45,10 +45,14 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         try {
-            $request->validate([
-                'email' => 'email | required',
-                'password' => 'required'
-            ]);
+            $validator = validator($request->all(),
+                [
+                    'email' => 'email | required',
+                    'password' => 'required'
+                ]);
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
             $credentials = request(['email', 'password']);
             if (!Auth::attempt($credentials)) {
                 return response()->json([
