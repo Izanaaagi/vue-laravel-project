@@ -28,21 +28,19 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::post('/register', [RegisterController::class, 'create']);
-Route::post('/login', [LoginController::class, 'login']);
+Route::post('/login', [LoginController::class, 'login'])->name('login');
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
+    Route::post('/logout', [LoginController::class, 'logout']);
+
     Route::post('/avatar', [AvatarController::class, 'store']);
     Route::get('/avatar/{id}', [AvatarController::class, 'show']);
 
-    Route::post('/logout', [LoginController::class, 'logout']);
-
     Route::get('/users/{id}', [UserProfileController::class, 'show']);
     Route::get('/users', [UserProfileController::class, 'index']);
-
     Route::get('/usersList', [UsersListController::class, 'showUsersList'])->name('list');
-
 
     Route::apiResource('forum', CategoryController::class);
     Route::apiResource('forum.topics', TopicController::class);

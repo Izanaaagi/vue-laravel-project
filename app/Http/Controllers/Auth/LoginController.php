@@ -56,9 +56,8 @@ class LoginController extends Controller
             $credentials = request(['email', 'password']);
             if (!Auth::attempt($credentials)) {
                 return response()->json([
-                    'status_code' => 500,
-                    'message' => 'Unauthorized'
-                ]);
+                    'error' => 'Incorrect login or password'
+                ], 403);
             }
             $user = User::where('email', $request->email)->first();
             if (!Hash::check($request->password, $user->password, [])) {
@@ -73,10 +72,8 @@ class LoginController extends Controller
             ]);
         } catch (Exception $error) {
             return response()->json([
-                'status_code' => 500,
-                'message' => 'Error in Login',
                 'error' => $error,
-            ]);
+            ], 403);
         }
     }
 
