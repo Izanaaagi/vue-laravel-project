@@ -14,6 +14,26 @@
             Login
           </h2>
 
+          <div v-if="Object.keys(ERRORS).length > 0"
+               class="bg-red-50 border-l-8 border-red-900 mb-2">
+            <div class="flex items-center">
+              <div class="p-2">
+                <div class="flex items-center">
+                  <div class="ml-2">
+                  </div>
+                  <p class="px-6 py-4 text-red-900 font-semibold text-lg">Please fix the
+                    following
+                    errors.</p>
+                </div>
+                <div class="px-16 mb-4">
+                  <li v-for="error in ERRORS" class="text-md font-bold text-red-500 text-sm">
+                    {{ error[0] }}
+                  </li>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <form class="mt-10" method="GET" @submit.prevent="login">
             <!-- Email Input -->
             <label for="email" class="block text-xs font-semibold text-gray-600 uppercase">E-mail</label>
@@ -57,6 +77,8 @@
 </template>
 
 <script>
+import {mapGetters, mapMutations} from "vuex";
+
 export default {
   data() {
     return {
@@ -65,13 +87,25 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['DELETE_ERRORS']),
     login: function () {
-      let email = this.email;
-      let password = this.password;
+      let email = this.email
+      let password = this.password
       this.$store.dispatch('login', {email, password})
-        .then(() => this.$router.push({name: 'forum'}))
-        .catch(err => console.log(err));
+        .then(() => {
+            if (Object.keys(this.ERRORS).length === 0) {
+              this.$router.push({name: 'forum'})
+            }
+          }
+        )
+        .catch(err => console.log(err))
     }
   },
+  computed: {
+    ...mapGetters(['ERRORS'])
+  },
+  destroyed() {
+    this.DELETE_ERRORS()
+  }
 };
 </script>

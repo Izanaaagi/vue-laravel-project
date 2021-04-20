@@ -56,7 +56,11 @@ class LoginController extends Controller
             $credentials = request(['email', 'password']);
             if (!Auth::attempt($credentials)) {
                 return response()->json([
-                    'error' => 'Incorrect login or password'
+                    'errors' => [
+                        'error' => [
+                            'Incorrect login or password'
+                        ]
+                    ]
                 ], 403);
             }
             $user = User::where('email', $request->email)->first();
@@ -72,7 +76,7 @@ class LoginController extends Controller
             ]);
         } catch (Exception $error) {
             return response()->json([
-                'error' => $error,
+                'errors' => $error,
             ], 403);
         }
     }

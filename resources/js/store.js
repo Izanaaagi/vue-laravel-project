@@ -36,29 +36,29 @@ export let store = new Vuex.Store({
       return axios.post('/api/register', user)
         .then(resp => {
           commit('AUTH_SUCCESS', user)
+          commit('DELETE_ERRORS')
         })
         .catch(err => {
+          commit('SET_ERRORS', err.response.data.errors)
           commit('AUTH_ERROR', err)
         })
     },
     login({commit}, user) {
-      return new Promise((resolve, reject) => {
-        commit('AUTH_REQUEST')
-        axios.post('/api/login', user)
-          .then(resp => {
-            const token = resp.data.access_token ? `${resp.data.token_type} ${resp.data.access_token}` : undefined
-            const user = resp.data.user
-            localStorage.setItem('token', token)
-            axios.defaults.headers.common['Authorization'] = token
-            commit('AUTH_SUCCESS', {token, user})
-            resolve(resp)
-          })
-          .catch(err => {
-            commit('AUTH_ERROR')
-            localStorage.removeItem('token')
-            reject(err)
-          })
-      })
+      commit('AUTH_REQUEST')
+      return axios.post('/api/login', user)
+        .then(resp => {
+          const token = resp.data.access_token ? `${resp.data.token_type} ${resp.data.access_token}` : undefined
+          const user = resp.data.user
+          localStorage.setItem('token', token)
+          axios.defaults.headers.common['Authorization'] = token
+          commit('AUTH_SUCCESS', {token, user})
+          commit('DELETE_ERRORS')
+        })
+        .catch(err => {
+          commit('AUTH_ERROR')
+          commit('SET_ERRORS', err.response.data.errors)
+          localStorage.removeItem('token')
+        })
     },
     logout({commit}) {
       return new Promise((resolve, reject) => {
