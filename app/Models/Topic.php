@@ -36,6 +36,7 @@ class Topic extends Model
             'text' => $text,
             'category_id' => $categoryId,
         ])->save();
+
     }
 
     //Return comments for topic

@@ -48,8 +48,10 @@ class CategoryController extends Controller
      */
     public function show($categoryId)
     {
-        Category::find($categoryId)->increment('views');
-        $topics = Category::find($categoryId)->topics()->paginate(5);
+        $category = Category::findOrFail($categoryId);
+        $category->increment('views');
+
+        $topics = $category->topics()->paginate(5);
         foreach ($topics as $topic) {
             $user = User::find($topic->user_id);
             $topic->user_name = $user->name;

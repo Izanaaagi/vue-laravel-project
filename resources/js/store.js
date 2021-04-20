@@ -1,5 +1,6 @@
 import Vuex from "vuex";
 import Vue from "vue";
+import {router} from "./router";
 
 Vue.use(Vuex);
 
@@ -77,17 +78,14 @@ export let store = new Vuex.Store({
     },
 
     USER({commit},) {
-      return new Promise((resolve, reject) => {
-        axios.get(`/api/users`)
-          .then(resp => {
-            let user = resp.data
-            commit('SET_AUTH_USER', user)
-            resolve(resp)
-          })
-          .catch(err => {
-            reject(err)
-          })
-      })
+      axios.get(`/api/users`)
+        .then(resp => {
+          let user = resp.data
+          commit('SET_AUTH_USER', user)
+        })
+        .catch(err => {
+          console.log(err.response.status)
+        })
     },
 
     USER_BY_ID({commit}, payload) {
@@ -98,7 +96,9 @@ export let store = new Vuex.Store({
           commit('SET_CURRENT_USER_PROFILE', user)
         })
         .catch(err => {
-          console.log(err)
+          if (err.response.status === 404) {
+            router.push({'name': 'pageNotFound'})
+          }
         })
     },
 
@@ -209,20 +209,22 @@ export let store = new Vuex.Store({
           commit('SET_CATEGORY_TOPICS', topics)
         })
         .catch(err => {
-          reject(err)
+          if (err.response.status === 404) {
+            router.replace({name: 'pageNotFound'})
+          }
         })
     },
     GET_TOPIC_BY_ID({commit}, payload) {
-      return new Promise((resolve, reject) => {
-        axios.get(`/api/forum/${payload.categoryId}/topics/${payload.topicId}`)
-          .then(resp => {
-            let topic = resp.data.topic
-            commit('SET_CURRENT_TOPIC', topic)
-          })
-          .catch(err => {
-            reject(err)
-          })
-      })
+      return axios.get(`/api/forum/${payload.categoryId}/topics/${payload.topicId}`)
+        .then(resp => {
+          let topic = resp.data.topic
+          commit('SET_CURRENT_TOPIC', topic)
+        })
+        .catch(err => {
+          if (err.response.status === 404) {
+            router.replace({name: 'pageNotFound'})
+          }
+        })
     },
     LIKE_TOPIC({commit}, payload) {
       return new Promise((resolve, reject) => {
@@ -314,7 +316,9 @@ export let store = new Vuex.Store({
           commit('SET_CHAT_ROOM', chatRoom)
         })
         .catch(err => {
-          console.log(err)
+          if (err.response.status === 404) {
+            router.replace({name: 'pageNotFound'})
+          }
         })
     },
     SEND_CHAT_MESSAGE({commit}, payload) {

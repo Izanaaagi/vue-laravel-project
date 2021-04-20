@@ -51,7 +51,7 @@ class User extends Authenticatable
 
     public function getUserById($id)
     {
-        $user = $this->find($id);
+        $user = $this->findOrFail($id);
         $user->avatar_path = $user->getAvatar();
         return $user;
     }

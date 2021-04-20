@@ -72,7 +72,6 @@ class ChatController extends Controller
             });
 
         $isMessages = $messages->count();
-        $messages_room = 0;
 
         if ($isMessages > 0) {
             $messages_room = $messages->first()->room()->first();
@@ -102,10 +101,8 @@ class ChatController extends Controller
      */
     public function show($id)
     {
-//        $authUserMessages = auth()->user()->sentMessagesTo($id)->get();
-//        $anotherUserMessages = auth()->user()->receivedMessagesFrom($id)->get();
-//        $messages = $authUserMessages->merge($anotherUserMessages)->sortBy('created_at')->values()->all();
-//        return response()->json(['messages' => $messages]);
+
+        User::findOrFail($id);
 
         $messages = Message::with('from', 'to')
             ->where(function ($query) use ($id) {

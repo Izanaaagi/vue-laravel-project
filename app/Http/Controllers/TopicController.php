@@ -48,6 +48,11 @@ class TopicController extends Controller
         $topic = new Topic();
         $topic->createTopic($categoryId, $request->title, $request->text);
 
+        Category::find($categoryId)
+            ->update([
+                'posts' => Topic::where('category_id', $categoryId)->count()
+            ]);
+
         $topics = Category::find($categoryId)->topics()->paginate(5);
         foreach ($topics as $topic) {
             $user = User::find($topic->user_id);
@@ -65,7 +70,7 @@ class TopicController extends Controller
     public
     function show($categoryId, $topicId)
     {
-        $topic = Topic::find($topicId);
+        $topic = Topic::findOrFail($topicId);
         $topic->user = User::find($topic->user_id);
         $topic->user->avatar_path = User::find($topic->user->id)->getAvatar();
         $topic->likes = $topic->likesUp();
@@ -118,6 +123,11 @@ class TopicController extends Controller
                 $user = User::find($topic->user_id);
                 $topic->user_name = $user->name;
             }
+
+            Category::find($categoryId)
+                ->update([
+                    'posts' => Topic::where('category_id', $categoryId)->count()
+                ]);
             return response()->json(['topics' => $topics, 'message' => 'topic deleted']);
         }
         abort(404);
