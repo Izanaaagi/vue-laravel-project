@@ -13,6 +13,7 @@ import TopicComponent from "./components/TopicComponent";
 import CreateTopicComponent from "./components/CreateTopicComponent";
 import ChatComponent from "./components/ChatComponent";
 import ChatsComponent from "./components/ChatsComponent";
+import PageNotFound from "./components/PageNotFound";
 
 Vue.use(VueRouter);
 
@@ -36,7 +37,7 @@ export let router = new VueRouter({
       }
     },
     {
-      path: '/*',
+      path: '/',
       name: 'mainLayout',
       component: MainLayout,
       meta: {
@@ -91,7 +92,12 @@ export let router = new VueRouter({
           component: ChatComponent,
         },
       ]
-    }
+    },
+    {
+      path: '*',
+      name: 'pageNotFound',
+      component: PageNotFound
+    },
   ],
 });
 
