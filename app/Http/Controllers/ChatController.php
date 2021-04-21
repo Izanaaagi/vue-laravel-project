@@ -6,6 +6,7 @@ use App\Events\MessageEvent;
 use App\Models\Room;
 use App\Models\Message;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ChatController extends Controller
@@ -30,7 +31,7 @@ class ChatController extends Controller
                 $chats->push(collect([
                     'user' => $message->from == auth()->user()->id ? User::find($message->to) : User::find($message->from),
                     'last_message' => $message->message,
-                    'created_at' => $message->created_at,
+                    'created_at' => Carbon::parse($message->created_at)->format('Y.m.d H:i'),
                     'chat_room' => $message->room_id
                 ]));
             }

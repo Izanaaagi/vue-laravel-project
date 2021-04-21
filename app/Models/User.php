@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -41,6 +42,8 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'created_at' => 'datetime:Y.m.d H:i',
+        'updated_at' => 'datetime:Y.m.d H:i'
     ];
 
     public function sentMessages()
@@ -127,4 +130,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Like::class);
     }
+
+//    public function getAvatarPathAttribute($path)
+//    {
+//    }
 }

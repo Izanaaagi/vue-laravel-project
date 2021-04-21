@@ -11,6 +11,11 @@ class Message extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'created_at' => 'datetime:Y.m.d H:i',
+        'updated_at' => 'datetime:Y.m.d H:i'
+    ];
+
     public function from()
     {
         return $this->belongsTo(User::class, 'from', 'id');

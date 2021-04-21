@@ -16,6 +16,11 @@ class Topic extends Model
         'category_id'
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime:Y.m.d H:i',
+        'updated_at' => 'datetime:Y.m.d H:i'
+    ];
+
     //Return category of this topic
     public function category()
     {
