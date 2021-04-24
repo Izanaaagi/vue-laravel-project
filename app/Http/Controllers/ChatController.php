@@ -37,10 +37,6 @@ class ChatController extends Controller
             }
         });
 
-        $chats->each(function ($chat) {
-            $chat['user']->avatar_path = User::find($chat['user']->id)->getAvatar();
-        });
-
 
         return response()->json(['chats' => $chats]);
     }

@@ -8,10 +8,11 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -43,8 +44,23 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'created_at' => 'datetime:Y.m.d H:i',
-        'updated_at' => 'datetime:Y.m.d H:i'
+        'updated_at' => 'datetime:Y.m.d H:i',
     ];
+
+    protected $guard_name = 'api';
+
+//    protected $appends = ['roles', 'permissions'];
+
+    public function toArray()
+    {
+        $data = parent::toArray();
+
+        $data['roles'] = $this->getRoleNames();
+        $data['permissions'] = $this->getAllPermissions()->pluck('name');
+
+        return $data;
+    }
+
 
     public function sentMessages()
     {
@@ -131,7 +147,22 @@ class User extends Authenticatable
         return $this->hasMany(Like::class);
     }
 
-//    public function getAvatarPathAttribute($path)
+    public function getAvatarPathAttribute($path)
+    {
+        if (isset($path)) {
+            return asset(Storage::url($path));
+        }
+
+        return asset(Storage::url('/avatars/default-avatar.jpg'));
+    }
+
+//    public function getRoleAttribute()
 //    {
+//        return $this->getRoleNames();
+//    }
+//
+//    public function getPermissionAttribute()
+//    {
+//        return $this->getPermissionNames();
 //    }
 }

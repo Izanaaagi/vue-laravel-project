@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class  UserProfileController extends Controller
@@ -10,12 +11,11 @@ class  UserProfileController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
         $user = auth()->user();
-        $user->avatar_path = $user->getAvatar();
         return response()->json($user);
     }
 
@@ -44,12 +44,11 @@ class  UserProfileController extends Controller
      * Display the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function show($id)
     {
-        $user = new User();
-        $user = $user->getUserById($id);
+        $user = User::findOrFail($id);
         return response()->json($user);
     }
 

@@ -11,10 +11,6 @@ class UsersListController extends Controller
     public function showUsersList()
     {
         $users = User::paginate(5);
-        $users->each(function ($user) {
-            $user->avatar_path = $user->getAvatar();
-        });
-
         return response()->json(['users' => $users
         ]);
     }

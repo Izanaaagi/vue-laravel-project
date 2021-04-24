@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use phpDocumentor\Reflection\File;
-use function PHPUnit\Framework\at;
+use Spatie\Permission\Models\Role;
 
-class AvatarController extends Controller
+class PermissionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,16 +15,7 @@ class AvatarController extends Controller
      */
     public function index()
     {
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return response()->json(['roles' => Role::all()]);
     }
 
     /**
@@ -37,17 +26,7 @@ class AvatarController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = validator($request->file(), [
-            'image' => 'image'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-        $user = auth()->user();
-        $file = $request->file('image');
-        $user->uploadAvatar($file);
-        return response()->json(["message" => "Image downloaded", "path" => asset(Storage::url($user->avatar_path))]);
+        //
     }
 
     /**
@@ -59,18 +38,7 @@ class AvatarController extends Controller
     public function show($id)
     {
         $user = User::find($id);
-        return response()->json(["path" => $user->avatar_path]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return response()->json(['user_permissions' => $user->can('Change username')]);
     }
 
     /**

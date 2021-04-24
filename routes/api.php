@@ -8,6 +8,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\TopicCommentController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\TopicLikeController;
@@ -54,4 +55,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/sendRequest/{id}', [FriendController::class, 'sendRequest'])->name('sendRequest');
         Route::delete('/delete/{id}', [FriendController::class, 'deleteFriend'])->name('deleteFriend');
     });
+
+    Route::apiResource('permissions', PermissionController::class);
 });
