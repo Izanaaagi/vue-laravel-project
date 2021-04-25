@@ -8,6 +8,7 @@
           <div class="flex justify-end">
             <div class="">
               <router-link
+                v-if="categoryId != 1 || USER.permissions.includes('create admin\'s topics')"
                 :to="{name: 'createForumTopic'}"
                 class="block no-underline border border-indigo-500 bg-indigo-500 text-white rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-indigo-600 focus:outline-none focus:shadow-outline"
               >
@@ -43,7 +44,7 @@
                   </div>
                 </div>
               </router-link>
-              <button v-if="USER.id == topic.user_id"
+              <button v-if="USER.id == topic.user_id || USER.permissions.includes('delete articles')"
                       @click="DELETE_TOPIC({categoryId: topic.category_id, topicId: topic.id})"
                       class="outline-none font-bold px-2 bg-red-600 text-sm hover:bg-red-700 text-white shadow-md rounded-lg">
                 Delete

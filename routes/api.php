@@ -39,10 +39,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/avatar', [AvatarController::class, 'store']);
     Route::get('/avatar/{id}', [AvatarController::class, 'show']);
 
-    Route::get('/users/{id}', [UserProfileController::class, 'show']);
-    Route::get('/users', [UserProfileController::class, 'index']);
     Route::get('/usersList', [UsersListController::class, 'showUsersList'])->name('list');
 
+    Route::apiResource('users', UserProfileController::class);
     Route::apiResource('forum', CategoryController::class);
     Route::apiResource('forum.topics', TopicController::class);
     Route::apiResource('forum.topics.likes', TopicLikeController::class);

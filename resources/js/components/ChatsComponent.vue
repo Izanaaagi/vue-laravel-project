@@ -2,7 +2,7 @@
   <div class="py-12">
     <square v-if="loading"></square>
     <div v-else class="max-w-10xl mx-auto sm:px-6 lg:px-8">
-      <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg flex flex-col p-5">
+      <div v-if="CHATS_LIST.length > 0" class="bg-white overflow-hidden shadow-xl sm:rounded-lg flex flex-col p-5">
         <router-link
           class="flex items-start px-4 py-6 hover:bg-gray-100"
           :to="{name: 'chatRoom', params:{userId: chat.user.id}}"
@@ -21,6 +21,10 @@
             </p>
           </div>
         </router-link>
+      </div>
+      <div v-else
+           class="mt-20 text-2xl container bg-white px-5 py-6 mx-auto flex justify-center align-middle">
+        Oops... You haven't сhats yet :(
       </div>
     </div>
   </div>

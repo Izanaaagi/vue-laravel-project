@@ -60,7 +60,6 @@ class  UserProfileController extends Controller
      */
     public function edit($id)
     {
-        //
     }
 
     /**
@@ -68,11 +67,25 @@ class  UserProfileController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
-        //
+        if (auth()->user()->can('change usernames')) {
+            $validator = validator($request->all(), [
+                'name' => 'required|min:2|string|max:255',
+            ]);
+
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+
+            $user = User::find($id);
+            $user->update($validator->valid());
+            return response()->json(['user' => $user]);
+        }
+        return response()->json(['errors' => ['Permissions error' => ['You haven\'t permissions']]], 403);
     }
 
     /**

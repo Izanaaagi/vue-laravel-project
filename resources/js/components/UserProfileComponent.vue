@@ -32,6 +32,8 @@
         <div class="flex flex-col ml-5">
           <b>Name:</b> {{ CURRENT_USER_PROFILE.name }}
           <b>Email:</b> {{ CURRENT_USER_PROFILE.email }}
+          <b>Role:</b>
+          <span v-for="role in CURRENT_USER_PROFILE.roles"> {{ role }}</span>
           <b>Date of Registration: </b> {{ CURRENT_USER_PROFILE.created_at }}
           <div v-show="!isAuthUser"
                class="flex flex-row">

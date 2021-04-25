@@ -34,10 +34,13 @@ class TopicController extends Controller
      * Store a newly created resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(TopicRequest $request, $categoryId)
     {
+        if ($categoryId == 1 && !auth()->user()->can('create admins\'s topics')) {
+            return response()->json(['errors' => ['Permissions error' => ['You haven\'t permissions']]], 403);
+        }
 
         $validator = Validator::make($request->all(), $request->rules());
 
@@ -59,6 +62,7 @@ class TopicController extends Controller
             $topic->user_name = $user->name;
         }
         return response()->json(['topics' => $topics, 'message' => 'topic created successfull']);
+
     }
 
     /**
@@ -109,13 +113,13 @@ class TopicController extends Controller
      * Remove the specified resource from storage.
      *
      * @param \App\Models\Topic $topic
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public
     function destroy($categoryId, $topicId)
     {
         $topic = Topic::find($topicId);
-        if ($topic->isTopicBy(auth()->id())) {
+        if ($topic->isTopicBy(auth()->id()) || auth()->user()->can('delete articles')) {
             $topic->deleteTopic($topic->id);
             $topics = Category::find($categoryId)->topics()->paginate(5);
             foreach ($topics as $topic) {
@@ -129,6 +133,6 @@ class TopicController extends Controller
                 ]);
             return response()->json(['topics' => $topics, 'message' => 'topic deleted']);
         }
-        abort(404);
+        return response()->json(['errors' => ['Permissions error' => ['You haven\'t permissions']]], 403);
     }
 }

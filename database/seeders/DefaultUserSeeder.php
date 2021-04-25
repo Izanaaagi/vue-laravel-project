@@ -21,7 +21,7 @@ class DefaultUserSeeder extends Seeder
             'email' => 'admin@mail.ru',
             'email_verified_at' => now(),
             'password' => Hash::make('admin'),
-        ]);
+        ])->assignRole('Admin');
 
         User::factory()->count(10)->create()->each(function ($user) {
             $user->assignRole('User');

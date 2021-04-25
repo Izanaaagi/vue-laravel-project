@@ -1,5 +1,5 @@
 <template>
-  <div v-cloak>
+  <div v-cloak v-if="!loading">
     <header class="text-gray-600 body-font">
       <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
         <a class="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
@@ -42,6 +42,11 @@
 import {mapActions, mapGetters} from "vuex"
 
 export default {
+  data() {
+    return {
+      loading: true
+    }
+  },
   computed: {
     ...mapGetters(['isLoggedIn'])
   },
@@ -55,7 +60,9 @@ export default {
     },
   },
   mounted() {
-    this.USER()
+    this.USER().then(() => {
+      this.loading = false
+    })
   }
 }
 </script>

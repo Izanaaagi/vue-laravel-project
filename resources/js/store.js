@@ -78,7 +78,7 @@ export let store = new Vuex.Store({
     },
 
     USER({commit},) {
-      axios.get(`/api/users`)
+      return axios.get(`/api/users`)
         .then(resp => {
           let user = resp.data
           commit('SET_AUTH_USER', user)

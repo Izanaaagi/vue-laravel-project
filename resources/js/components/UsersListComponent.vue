@@ -25,6 +25,10 @@
               }}
             </router-link>
             <b>Email:</b> {{ user.email }}
+            <b>Role: </b>
+            <span v-for="role in user.roles">
+                {{ role }}
+              </span>
           </div>
         </div>
         <tailable-pagination
