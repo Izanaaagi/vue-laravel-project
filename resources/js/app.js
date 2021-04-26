@@ -18,6 +18,21 @@ if (token) {
   Vue.prototype.$http.defaults.headers.common['Authorization'] = token
 }
 
+axios.interceptors.response.use(function (response) {
+    return response;
+  },
+  function (error) {
+
+    if (error.response.status === 401) {
+      localStorage.removeItem('token')
+      router.replace({name: 'login'})
+      store.commit('SET_ERRORS', {
+        errors: ['Your session is over']
+      })
+    }
+    return Promise.reject(error);
+  });
+
 const app = new Vue({
   el: '#app',
   router,

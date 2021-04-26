@@ -105,7 +105,7 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     // этот путь требует авторизации, проверяем залогинен ли
     // пользователь, и если нет, перенаправляем на страницу логина
-    if (!store.getters.isLoggedIn) {
+    if (!localStorage.getItem('token')) {
       next({name: 'login'})
     } else {
       next()
@@ -117,7 +117,7 @@ router.beforeEach((to, from, next) => {
 
 router.beforeResolve((to, from, next) => {
   if (to.matched.some(record => record.meta.isAuthorized)) {
-    if (store.getters.isLoggedIn) {
+    if (localStorage.getItem('token')) {
       next('/forum')
     } else {
       next()
