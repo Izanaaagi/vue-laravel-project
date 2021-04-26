@@ -30,7 +30,21 @@
                class="rounded-full">
         </div>
         <div class="flex flex-col ml-5">
-          <b>Name:</b> {{ CURRENT_USER_PROFILE.name }}
+          <div class="flex flex-col">
+            <b>Name:</b>
+            <input
+              :class="[
+               'border',
+               'border-gray-400',
+               'outline-none',
+               {'border-red-600': Object.keys(this.ERRORS).length !== 0}]"
+              v-if="adminMode"
+              v-model="CURRENT_USER_PROFILE.name"
+              @keypress.enter="editName"
+              ref="name"
+              type="text">
+            <span v-else>{{ CURRENT_USER_PROFILE.name }}</span>
+          </div>
           <b>Email:</b> {{ CURRENT_USER_PROFILE.email }}
           <b>Role:</b>
           <span v-for="role in CURRENT_USER_PROFILE.roles"> {{ role }}</span>
@@ -72,43 +86,14 @@
               Save new avatar
             </button>
           </div>
-          <!--    @if(auth()->user()->id != $user->id)-->
-
-          <!--    @if(auth()->user()->haveFriendOrRequest($user->id))-->
-          <!--    <form action="{{route('deleteFriend', ['id' => $user->id])}}" method="POST">-->
-          <!--      @csrf-->
-          <!--      @method('DELETE')-->
-          <!--      <button type="submit"-->
-          <!--              class="border bg-red-500 hover:bg-red-700 rounded-md md:py-1 md:text-lg md:px-5">-->
-          <!--        Delete Friend-->
-          <!--      </button>-->
-          <!--    </form>-->
-          <!--    @else-->
-          <!--    <form action="{{route('sendRequest', ['id' => $user->id])}}" method="POST">-->
-          <!--      @csrf-->
-          <!--      @method("POST")-->
-          <!--      <button type="submit"-->
-          <!--              class="border bg-green-600 hover:bg-green-700 rounded-md md:py-1 md:text-lg md:px-5">-->
-          <!--        Add to friends-->
-          <!--      </button>-->
-          <!--      @endif-->
-          <!--    </form>-->
-          <!--    @endif-->
-
-          <!--    @if(auth()->user()->getRoleNames()[0] == 'admin')-->
-          <!--    <div class="mt-10">-->
-          <!--      <h1 class="text-red-700 text-2xl">ADMIN PANEL</h1>-->
-          <!--      <form action="{{route('editUserName', ['user' => $user])}}" method="POST">-->
-          <!--        @csrf-->
-          <!--        @method("PATCH")-->
-          <!--        <input type="text" name="name" value="{{$user->name}}">-->
-          <!--        <button type="submit"-->
-          <!--                class="border bg-yellow-200 hover:bg-yellow-400 rounded-md md:py-1 md:text-lg md:px-5">-->
-          <!--          Edit Name-->
-          <!--        </button>-->
-          <!--      </form>-->
-          <!--    </div>-->
-          <!--    @endif-->
+          <div v-if="USER.roles == 'admin'" class="mt-10">
+            <h1 class="text-red-700 text-2xl">ADMIN PANEL</h1>
+            <button
+              @click="showNameInput"
+              class="border bg-yellow-200 hover:bg-yellow-400 rounded-md md:py-1 md:text-lg md:px-5">
+              Edit Name
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -124,7 +109,8 @@ export default {
   data() {
     return {
       file: '',
-      loading: true
+      loading: true,
+      adminMode: false,
     }
   },
   methods: {
@@ -135,19 +121,44 @@ export default {
       'FRIENDS_LIST',
       'GET_AVATAR',
       'UPLOAD_AVATAR',
+      'CHANGE_USERNAME',
     ]),
-    ...mapMutations(['DELETE_ERRORS']),
+    ...mapMutations(['DELETE_ERRORS',]),
     handleFileUpload() {
-      this.file = this.$refs.file.files[0];
+      this.file = this.$refs.file.files[0]
     },
     submitAvatar() {
-      let formData = new FormData();
+      let formData = new FormData()
       formData.append('image', this.file)
-      this.UPLOAD_AVATAR({formData})
+      this.UPLOAD_AVATAR({formData}).then(() => {
+        if (this.CURRENT_USER_PROFILE.id === this.USER.id) {
+          this.USER.avatar_path = this.$store.state.avatar
+        }
+      })
+    },
+    showNameInput() {
+      this.adminMode = true
+      Vue.nextTick(() => {
+        this.$refs.name.focus()
+      })
+    },
+    editName() {
+      this.CHANGE_USERNAME({user: this.CURRENT_USER_PROFILE})
+        .then(() => {
+          if (Object.keys(this.ERRORS).length === 0)
+            if (this.CURRENT_USER_PROFILE.id === this.USER.id) {
+              let USER = this.USER;
+              this.USER.name = this.CURRENT_USER_PROFILE.name
+            }
+          this.adminMode = false
+        })
+      if (this.adminMode) {
+        this.$refs.name.focus()
+      }
     }
   },
   computed: {
-    ...mapGetters(['CURRENT_USER_PROFILE', 'ERRORS']),
+    ...mapGetters(['CURRENT_USER_PROFILE', 'ERRORS', 'USER']),
     isFriend() {
       return !!this.$store.state.friends.acceptedFriends.find(friend => friend.id === this.CURRENT_USER_PROFILE.id)
     },
@@ -159,6 +170,9 @@ export default {
     '$route.params.id': {
       immediate: true,
       handler() {
+        this.DELETE_ERRORS()
+        this.adminMode = false
+
         this.USER_BY_ID({id: this.$route.params.id})
         this.FRIENDS_LIST()
         this.GET_AVATAR({id: this.$route.params.id})
@@ -170,7 +184,7 @@ export default {
   },
   destroyed() {
     this.DELETE_ERRORS()
-  }
+  },
 }
 </script>
 

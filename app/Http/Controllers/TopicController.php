@@ -38,7 +38,7 @@ class TopicController extends Controller
      */
     public function store(TopicRequest $request, $categoryId)
     {
-        if ($categoryId == 1 && !auth()->user()->can('create admins\'s topics')) {
+        if ($categoryId == 1 && !auth()->user()->can('create admin\'s topics')) {
             return response()->json(['errors' => ['Permissions error' => ['You haven\'t permissions']]], 403);
         }
 
@@ -61,7 +61,7 @@ class TopicController extends Controller
             $user = User::find($topic->user_id);
             $topic->user_name = $user->name;
         }
-        return response()->json(['topics' => $topics, 'message' => 'topic created successfull']);
+        return response()->json(['topics' => $topics, 'message' => 'topic created successful']);
 
     }
 

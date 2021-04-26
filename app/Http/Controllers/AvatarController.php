@@ -47,7 +47,7 @@ class AvatarController extends Controller
         $user = auth()->user();
         $file = $request->file('image');
         $user->uploadAvatar($file);
-        return response()->json(["message" => "Image downloaded", "path" => asset(Storage::url($user->avatar_path))]);
+        return response()->json(["message" => "Image downloaded", "path" => $user->avatar_path]);
     }
 
     /**

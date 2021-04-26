@@ -82,7 +82,9 @@ class  UserProfileController extends Controller
             }
 
             $user = User::find($id);
-            $user->update($validator->valid());
+            $user->update([
+                'name' => $request->name
+            ]);
             return response()->json(['user' => $user]);
         }
         return response()->json(['errors' => ['Permissions error' => ['You haven\'t permissions']]], 403);

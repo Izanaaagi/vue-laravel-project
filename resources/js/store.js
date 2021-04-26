@@ -29,7 +29,6 @@ export let store = new Vuex.Store({
     chatsList: [],
     chatMessages: [],
     chatRoom: [],
-
   },
   actions: {
     register({commit}, user) {
@@ -340,6 +339,16 @@ export let store = new Vuex.Store({
         })
     },
 
+    CHANGE_USERNAME({commit}, payload) {
+      return axios.patch(`/api/users/${payload.user.id}`, payload.user)
+        .then(resp => {
+          commit('SET_CURRENT_USER_PROFILE', resp.data.user)
+          commit('DELETE_ERRORS')
+        })
+        .catch(err => {
+          commit('SET_ERRORS', err.response.data.errors)
+        })
+    }
   },
   mutations: {
     AUTH_REQUEST(state) {
