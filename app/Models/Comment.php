@@ -13,6 +13,11 @@ class Comment extends Model
         'text', 'user_id'
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime:Y.m.d H:i',
+        'updated_at' => 'datetime:Y.m.d H:i',
+    ];
+
     //Return topic for this comment
     public function topic()
     {
@@ -23,7 +28,7 @@ class Comment extends Model
     //Return user for this comment
     public function user()
     {
-        return $this->belongsTo(User::class)->first();
+        return $this->belongsTo(User::class);
     }
 
     public function isCommentedBy($userId)

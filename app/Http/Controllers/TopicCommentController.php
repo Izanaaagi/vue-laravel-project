@@ -16,12 +16,7 @@ class TopicCommentController extends Controller
      */
     public function index($categoryId, $topicId)
     {
-        $topic = Topic::find($topicId);
-        $comments = $topic->comments()->get();
-        foreach ($comments as $comment) {
-            $comment->user = $comment->user();
-            $comment->user->avatar_path = User::find($comment->user_id)->getAvatar();
-        }
+        $comments = Comment::where('commentable_id', $topicId)->with('user')->get();
         return response()->json(['comments' => $comments]);
     }
 
@@ -39,17 +34,21 @@ class TopicCommentController extends Controller
      * Store a newly created resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request, $categoryId, $topicId)
     {
-        $topic = Topic::find($topicId);
-        $topic->addComment($request->text);
-        $comments = $topic->comments()->get();
-        foreach ($comments as $comment) {
-            $comment->user = $comment->user();
-            $comment->user->avatar_path = User::find($comment->user_id)->getAvatar();
+        $validator = validator($request->all(), [
+            'text' => 'required|min:2'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
         }
+
+        Topic::findOrFail($topicId)->addComment($request->text);
+        $comments = Comment::where('commentable_id', $topicId)->with('user')->get();
+
         return response()->json(['message' => 'comment \'' . $request->text . '\' created', 'comments' => $comments]);
     }
 
@@ -91,21 +90,18 @@ class TopicCommentController extends Controller
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($categoryId, $topicId, $commentId)
     {
-        $comment = Comment::find($commentId);
-        $topic = Topic::find($topicId);
+        $comment = Comment::findOrFail($commentId);
+
         if ($comment->isCommentedBy(auth()->id())) {
             $comment->deleteComment($commentId);
-            $comments = $topic->comments()->get();
-            foreach ($comments as $comment) {
-                $comment->user = $comment->user();
-                $comment->user->avatar_path = User::find($comment->user_id)->getAvatar();
-            }
+            $comments = Comment::where('commentable_id', $topicId)->with('user')->get();
             return response()->json(['message' => 'comment deleted', 'comments' => $comments]);
         }
-        return abort(404);
+
+        return response()->json(['error' => [['It isn\'t your comment']]], 403);
     }
 }

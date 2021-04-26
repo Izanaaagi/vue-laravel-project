@@ -68,6 +68,26 @@
 
         <section class="rounded-b-lg w-full  mt-4 ">
 
+          <div v-if="Object.keys(ERRORS).length > 0"
+               class="bg-red-50 border-l-8 border-red-900 mb-2">
+            <div class="flex items-center">
+              <div class="p-2">
+                <div class="flex items-center">
+                  <div class="ml-2">
+                  </div>
+                  <p class="px-6 py-4 text-red-900 font-semibold text-lg">Please fix the
+                    following
+                    errors.</p>
+                </div>
+                <div class="px-16 mb-4">
+                  <li v-for="error in ERRORS" class="text-md font-bold text-red-500 text-sm">
+                    {{ error[0] }}
+                  </li>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div id="task-comments" class="pt-4">
             <div
               class="bg-white rounded-lg p-3  flex flex-col justify-center items-center md:items-start shadow-lg mb-4"
@@ -97,10 +117,12 @@
             </div>
 
             <textarea
+              @keypress.enter="sendComment"
               class="resize-none w-full shadow-inner p-4 border-0 mb-4 rounded-lg focus:shadow-outline text-2xl"
-              placeholder="Ask questions here." cols="6" rows="4" id="comment_content"
+              placeholder="Ask questions here." cols="5" rows="4" id="comment_content"
+              ref="commentInput"
               name="text"
-              v-model="commentText" spellcheck="false"></textarea>
+              v-model="commentText"/>
             <button @click="sendComment"
                     class="font-bold py-2 px-4 w-full bg-indigo-600 text-lg hover:bg-indigo-700 text-white shadow-md rounded-lg ">
               Comment
@@ -114,7 +136,7 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
+import {mapActions, mapGetters, mapMutations} from "vuex";
 
 export default {
   name: "TopicComponent",
@@ -134,6 +156,7 @@ export default {
       'GET_TOPIC_COMMENTS',
       'DELETE_TOPIC_COMMENT',
       'COMMENT_TOPIC']),
+    ...mapMutations(['DELETE_ERRORS']),
     sendComment() {
       this.COMMENT_TOPIC({categoryId: this.categoryId, topicId: this.topicId, text: this.commentText})
       this.commentText = ''
@@ -143,7 +166,8 @@ export default {
     ...mapGetters([
       'CURRENT_TOPIC',
       'TOPIC_COMMENTS',
-      'USER']),
+      'USER',
+      'ERRORS']),
   },
   mounted() {
     this.GET_TOPIC_BY_ID({categoryId: this.categoryId, topicId: this.topicId})
@@ -153,6 +177,9 @@ export default {
             this.loading = false
           })
       })
+  },
+  destroyed() {
+    this.DELETE_ERRORS()
   }
 }
 </script>

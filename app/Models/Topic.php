@@ -30,7 +30,7 @@ class Topic extends Model
     //Return user, which created this topic
     public function user()
     {
-        return $this->belongsTo(User::class)->first();
+        return $this->belongsTo(User::class);
     }
 
     public function createTopic($categoryId, $title, $text)
@@ -47,8 +47,8 @@ class Topic extends Model
     //Return comments for topic
     public function comments()
     {
-        $comments = $this->morphMany(Comment::class, 'commentable');
-        return $comments;
+        return $this->morphMany(Comment::class, 'commentable');
+
     }
 
     //Return count of comments

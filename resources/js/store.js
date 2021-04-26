@@ -272,16 +272,15 @@ export let store = new Vuex.Store({
       })
     },
     COMMENT_TOPIC({commit}, payload) {
-      return new Promise((resolve, reject) => {
-        axios.post(`/api/forum/${payload.categoryId}/topics/${payload.topicId}/comments`, {text: payload.text})
-          .then(resp => {
-            let comments = resp.data.comments
-            commit('SET_COMMENTS', comments)
-          })
-          .catch(err => {
-            reject(err)
-          })
-      })
+      return axios.post(`/api/forum/${payload.categoryId}/topics/${payload.topicId}/comments`, {text: payload.text})
+        .then(resp => {
+          let comments = resp.data.comments
+          commit('SET_COMMENTS', comments)
+          commit('DELETE_ERRORS')
+        })
+        .catch(err => {
+          commit('SET_ERRORS', err.response.data.errors)
+        })
     },
     DELETE_TOPIC({commit}, payload) {
       return axios.delete(`/api/forum/${payload.categoryId}/topics/${payload.topicId}`)
