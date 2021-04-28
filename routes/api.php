@@ -1,13 +1,11 @@
 <?php
 
-use App\Events\MessageEvent;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FriendController;
-use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\TopicCommentController;
 use App\Http\Controllers\TopicController;
@@ -31,6 +29,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [RegisterController::class, 'create']);
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 
+Route::get('/login/{provider}', [LoginController::class, 'redirectToProvider']);
+Route::get('/login/{provider}/callback', [LoginController::class, 'redirectToProviderCallback']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
 

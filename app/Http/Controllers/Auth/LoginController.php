@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
 {
@@ -88,5 +90,44 @@ class LoginController extends Controller
         return [
             'message' => 'Tokens Revoked'
         ];
+    }
+
+    public function redirectToProvider($provider)
+    {
+        if ($provider == 'google') {
+            return Socialite::driver($provider)->stateless()->redirect();
+        }
+        return response()->json(['errors' => ['Provider doesn\'t exists']], 404);
+    }
+
+    public function redirectToProviderCallback($provider)
+    {
+
+        if ($provider != 'google') {
+            return response()->json(['errors' => ['Provider doesn\'t exists']], 404);
+        }
+
+        try {
+            $userFromSocial = Socialite::driver($provider)->stateless()->user();
+        } catch (ClientException $exception) {
+            return response()->json(['errors' => ['Invalid credentials provided']]);
+        }
+
+        $user = User::firstOrCreate([
+            'name' => $userFromSocial->getName(),
+            'email' => $userFromSocial->getEmail(),
+            'avatar_path' => $userFromSocial->getAvatar(),
+            'email_verified_at' => now(),
+            'provider' => $provider,
+            'provider_id' => $userFromSocial->getId()
+        ]);
+        $user->assignRole('user');
+
+        $tokenResult = $user->createToken('authToken')->plainTextToken;
+
+        return response()->json([
+            'access_token' => $tokenResult,
+            'token_type' => 'Bearer',
+            'user' => $user]);
     }
 }
