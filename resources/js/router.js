@@ -21,6 +21,12 @@ export let router = new VueRouter({
   mode: 'history',
   routes: [
     {
+      path: '/auth/:provide/callback',
+      component: {
+        template: '<div class="auth-component"></div>'
+      }
+    },
+    {
       path: '/',
       name: 'login',
       component: Login,

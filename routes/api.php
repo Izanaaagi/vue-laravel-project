@@ -24,8 +24,6 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-
 Route::post('/register', [RegisterController::class, 'create']);
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 
