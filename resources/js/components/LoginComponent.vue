@@ -141,10 +141,9 @@ export default {
       }
       console.log(e.data)
       let token = `${e.data.token_type} ${e.data.access_token}`
-      let user = e.data.user
       localStorage.setItem('token', token)
       axios.defaults.headers.common['Authorization'] = token
-      this.$store.commit('AUTH_SUCCESS', {token, user})
+      this.$store.commit('AUTH_SUCCESS', {token})
 
       this.$router.replace({name: 'forum'})
     }

@@ -152,6 +152,9 @@ class User extends Authenticatable
     public function getAvatarPathAttribute($path)
     {
         if (isset($path)) {
+            if (explode(':', trim($path))[0] == 'https') {
+                return $path;
+            }
             return asset(Storage::url($path));
         }
 

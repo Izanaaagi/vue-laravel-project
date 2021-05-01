@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\oAuthController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\CategoryController;
@@ -27,8 +28,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [RegisterController::class, 'create']);
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 
-Route::get('/login/{provider}', [LoginController::class, 'redirectToProvider']);
-Route::get('/login/{provider}/callback', [LoginController::class, 'redirectToProviderCallback']);
+Route::get('/login/{provider}', [oAuthController::class, 'redirectToProvider']);
+Route::get('/login/{provider}/callback', [oAuthController::class, 'redirectToProviderCallback']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
