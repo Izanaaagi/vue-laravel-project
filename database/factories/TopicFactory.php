@@ -23,7 +23,7 @@ class TopicFactory extends Factory
     public function definition()
     {
         return [
-            'category_id' => 1,
+            'category_id' => 2,
             'user_id' => User::inRandomOrder()->first(),
             'title' => $this->faker->realText(20),
             'text' => $this->faker->realText(200),

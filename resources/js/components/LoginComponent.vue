@@ -73,7 +73,7 @@
               </router-link>
               <button
                 @click="oAuthLogin('google')"
-                class="flex items-center justify-center text-white rounded-lg shadow-md hover:bg-gray-100">
+                class="focus:outline-none flex items-center justify-center text-white rounded-lg shadow-md hover:bg-gray-100">
                 <div class="px-4 py-3">
                   <svg class="h-6 w-6" viewBox="0 0 40 40">
                     <path
@@ -111,7 +111,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['DELETE_ERRORS']),
+    ...mapMutations(['DELETE_ERRORS', 'SET_ERRORS', 'DELETE_ERRORS']),
     login() {
       let email = this.email
       let password = this.password
@@ -129,25 +129,24 @@ export default {
       axios.get(`api/login/${provider}`)
         .then(response => {
           newWindow.location.href = response.data.url;
+          this.DELETE_ERRORS();
         })
-        .catch(function (error) {
-          console.error(error);
+        .catch(error => {
+          this.SET_ERRORS(error.response.errors)
         });
     },
-
     onMessage(e) {
       if (e.origin !== window.origin || !e.data.access_token) {
         return
       }
-      console.log(e.data)
       let token = `${e.data.token_type} ${e.data.access_token}`
       localStorage.setItem('token', token)
       axios.defaults.headers.common['Authorization'] = token
+
       this.$store.commit('AUTH_SUCCESS', {token})
 
       this.$router.replace({name: 'forum'})
     }
-
   },
   computed: {
     ...mapGetters(['ERRORS'])
