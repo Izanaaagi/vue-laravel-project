@@ -6,7 +6,7 @@
         window.opener.postMessage({
             access_token: "{{ $access_token }}",
             token_type: "{{$token_type}}",
-        }, 'http://back.com');
+        }, 'https://vue-laravel-social-network-e3si7.ondigitalocean.app/');
         window.close();
     </script>
 </head>
