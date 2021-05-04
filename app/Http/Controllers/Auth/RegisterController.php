@@ -60,6 +60,6 @@ class RegisterController extends Controller
             'password' => Hash::make($request['password']),
         ]);
         $user->assignRole('user');
-        return $user;
+        return response()->json(['user' => $user]);
     }
 }
